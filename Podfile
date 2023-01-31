@@ -7,6 +7,7 @@ target 'SampleUICollectionViewDiffableDataSource' do
 
   # Pods for SampleUICollectionViewDiffableDataSource
   pod 'Kingfisher', '~> 7.0'
+  pod 'SwiftLint'
   
 
 end
