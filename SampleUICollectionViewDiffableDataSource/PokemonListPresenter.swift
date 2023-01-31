@@ -11,8 +11,8 @@ import Foundation
 protocol PokemonListPresenterInput {
     var numberOfPokemons: Int { get }
     func fetchPokemonData()
-    func didTapTypeOfPokemonCell()
-    func didTapPokemonCell()
+//    func didTapTypeOfPokemonCell()
+//    func didTapPokemonCell()
 }
 
 // ViewからPresenterに処理を依頼する際の処理
@@ -57,11 +57,11 @@ final class SearchPokemonPresenter: PokemonListPresenterInput {
         })
     }
 
-    func didTapTypeOfPokemonCell() {
-        <#code#>
-    }
-
-    func didTapPokemonCell() {
-        <#code#>
-    }
+//    func didTapTypeOfPokemonCell() {
+//        <#code#>
+//    }
+//
+//    func didTapPokemonCell() {
+//        <#code#>
+//    }
 }
