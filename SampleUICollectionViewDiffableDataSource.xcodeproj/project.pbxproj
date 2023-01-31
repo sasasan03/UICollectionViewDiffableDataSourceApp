@@ -13,6 +13,8 @@
 		1C79CDD12988C57300B85AF9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1C79CDCF2988C57300B85AF9 /* Main.storyboard */; };
 		1C79CDD32988C57600B85AF9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1C79CDD22988C57600B85AF9 /* Assets.xcassets */; };
 		1C79CDD62988C57600B85AF9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1C79CDD42988C57600B85AF9 /* LaunchScreen.storyboard */; };
+		1C79CDE22988E39400B85AF9 /* Pokemon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C79CDE12988E39400B85AF9 /* Pokemon.swift */; };
+		1C79CDE42988E40600B85AF9 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C79CDE32988E40600B85AF9 /* API.swift */; };
 		CC45E608DF47C9DBFB7B1B4B /* Pods_SampleUICollectionViewDiffableDataSource.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BC35B33A3C0C4665C41F1BC2 /* Pods_SampleUICollectionViewDiffableDataSource.framework */; };
 /* End PBXBuildFile section */
 
@@ -25,6 +27,8 @@
 		1C79CDD22988C57600B85AF9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1C79CDD52988C57600B85AF9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1C79CDD72988C57600B85AF9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1C79CDE12988E39400B85AF9 /* Pokemon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pokemon.swift; sourceTree = "<group>"; };
+		1C79CDE32988E40600B85AF9 /* API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 		70B6BAAEBB2A3568C7632670 /* Pods-SampleUICollectionViewDiffableDataSource.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SampleUICollectionViewDiffableDataSource.release.xcconfig"; path = "Target Support Files/Pods-SampleUICollectionViewDiffableDataSource/Pods-SampleUICollectionViewDiffableDataSource.release.xcconfig"; sourceTree = "<group>"; };
 		BC35B33A3C0C4665C41F1BC2 /* Pods_SampleUICollectionViewDiffableDataSource.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SampleUICollectionViewDiffableDataSource.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3A6B0848A5FFD6BB5D8D81C /* Pods-SampleUICollectionViewDiffableDataSource.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SampleUICollectionViewDiffableDataSource.debug.xcconfig"; path = "Target Support Files/Pods-SampleUICollectionViewDiffableDataSource/Pods-SampleUICollectionViewDiffableDataSource.debug.xcconfig"; sourceTree = "<group>"; };
@@ -74,6 +78,8 @@
 			children = (
 				1C79CDC92988C57300B85AF9 /* AppDelegate.swift */,
 				1C79CDCB2988C57300B85AF9 /* SceneDelegate.swift */,
+				1C79CDE12988E39400B85AF9 /* Pokemon.swift */,
+				1C79CDE32988E40600B85AF9 /* API.swift */,
 				1C79CDCD2988C57300B85AF9 /* ViewController.swift */,
 				1C79CDCF2988C57300B85AF9 /* Main.storyboard */,
 				1C79CDD22988C57600B85AF9 /* Assets.xcassets */,
@@ -224,9 +230,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C79CDE22988E39400B85AF9 /* Pokemon.swift in Sources */,
 				1C79CDCE2988C57300B85AF9 /* ViewController.swift in Sources */,
 				1C79CDCA2988C57300B85AF9 /* AppDelegate.swift in Sources */,
 				1C79CDCC2988C57300B85AF9 /* SceneDelegate.swift in Sources */,
+				1C79CDE42988E40600B85AF9 /* API.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
