@@ -7,6 +7,12 @@
 
 import Foundation
 
+
+protocol APIInput {
+    func decodePokemonData(completion: @escaping (Result<[Pokemon], Error>) -> Void)
+}
+
+
 final class API {
     // 通信によって取得したデータをパース
     // 取得したポケモンのデータをSwiftの型として扱う為にデコード
@@ -25,8 +31,10 @@ final class API {
                     }
                 }
                 completion(.success(pokemons))
-            case .failure(let error):
+            case .failure(let error as URLError):
                 completion(.failure(error))
+            case .failure(_):
+                fatalError("Unexpected Error")
             }
         })
     }
