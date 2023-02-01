@@ -23,13 +23,13 @@ protocol PokemonListPresenterOutput: AnyObject {
 }
 
 
-final class SearchPokemonPresenter: PokemonListPresenterInput {
+final class PokemonListPresenter: PokemonListPresenterInput {
     var pokemons: [Pokemon] = []
 
-    private var api: APIInput!
     private weak var pokemonListVC: PokemonListPresenterOutput!
+    private var api: APIInput
 
-    init(pokemonListVC: PokemonListPresenterOutput!, api: APIInput) {
+    init(pokemonListVC: PokemonListPresenterOutput, api: APIInput) {
         self.pokemonListVC = pokemonListVC
         self.api = api
     }

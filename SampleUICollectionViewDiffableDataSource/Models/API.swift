@@ -13,7 +13,7 @@ protocol APIInput {
 }
 
 
-final class API {
+final class API: APIInput {
     // 通信によって取得したデータをパース
     // 取得したポケモンのデータをSwiftの型として扱う為にデコード
     func decodePokemonData(completion: @escaping (Result<[Pokemon], Error>) -> Void) {

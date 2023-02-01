@@ -17,6 +17,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
+
+        let navigationController = UIStoryboard(name: PokemonListViewController.storyboardName, bundle: nil).instantiateInitialViewController() as! UINavigationController
+
+        let pokemonListVC = navigationController.viewControllers[0] as! PokemonListViewController
+        
+        let model = API()
+        // PreseneterはViewのインスタンスを要求する為、Controllerのクラスファイルでselfを渡すわけにはいかず、SceneDelegateで処理を記述する必要がある。
+        let presenter = PokemonListPresenter(pokemonListVC: pokemonListVC, api: model)
+        pokemonListVC.inject(presenter: presenter)
+
+        window?.rootViewController = pokemonListVC
+        window?.makeKeyAndVisible()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
