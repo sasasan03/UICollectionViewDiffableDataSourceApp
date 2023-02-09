@@ -29,6 +29,36 @@ final class PokemonListViewController: UIViewController {
     }
 }
 
+extension PokemonListViewController: PokemonListPresenterOutput {
+    // インジケータを起動させる
+    func startIndicator() {
+        view.alpha = 0.5
+        indicator.isHidden = false
+        indicator.startAnimating()
+    }
+
+    // Viewを更新
+    func updateView() {
+        indicator.stopAnimating()
+        indicator.isHidden = true
+        view.alpha = 1.0
+        // しかしDiffableDaraSorceを使えばリロード処理は不要だった気がする
+        collectionView.reloadData()
+    }
+
+    // 通信失敗時にアラートを表示する
+    func showAlertMessage(errorMessage: String) {
+        let alertController = UIAlertController(title: "通信エラー", message: errorMessage, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "閉じる", style: .cancel, handler: { [weak self] _ in
+            self?.presenter.didTapAlertCancelButton()
+        }))
+        alertController.addAction(UIAlertAction(title: "再度試す", style: .default, handler: { [weak self] _ in
+            self?.presenter.didTapRestartURLSessionButton() }))
+
+        present(alertController, animated: true)
+    }
+}
+
 
 extension PokemonListViewController {
     private func configureHierarchy() {

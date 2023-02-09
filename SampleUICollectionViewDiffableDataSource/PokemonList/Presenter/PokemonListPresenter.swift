@@ -12,6 +12,8 @@ import UIKit
 protocol PokemonListPresenterInput {
     var numberOfPokemons: Int { get }
     func viewDidLoad(collectionView: UICollectionView)
+    func didTapRestartURLSessionButton()
+    func didTapAlertCancelButton()
 //    func didTapTypeOfPokemonCell()
 //    func didTapPokemonCell()
 }
@@ -141,7 +143,34 @@ final class PokemonListPresenter: PokemonListPresenterInput {
             }
         })
     }
-//    func didTapTypeOfPokemonCell() {
+
+    // 再度通信処理を実行
+    func didTapRestartURLSessionButton() {
+        view.startIndicator()
+        model.decodePokemonData(completion: { [weak self] result in
+            switch result {
+            case .success(let pokemons):
+                self?.pokemons = pokemons
+                self?.pokemons.sort { $0.id < $1.id }
+
+                DispatchQueue.main.async {
+                    self?.view.updateView()
+                }
+            case .failure(let error as URLError):
+                DispatchQueue.main.async {
+                    self?.view.showAlertMessage(errorMessage: error.message)
+                }
+            case .failure:
+                fatalError("unexpected Errorr")
+            }
+        })
+    }
+
+    func didTapAlertCancelButton() {
+        view.updateView()
+    }
+
+    //    func didTapTypeOfPokemonCell() {
 //        <#code#>
 //    }
 //
