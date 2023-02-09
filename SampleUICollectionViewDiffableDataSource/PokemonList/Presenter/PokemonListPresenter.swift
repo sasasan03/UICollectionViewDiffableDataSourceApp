@@ -45,7 +45,30 @@ struct DiffableItemData: Hashable {
 }
 
 final class PokemonListPresenter: PokemonListPresenterInput {
-    var pokemons: [Pokemon] = []
+    // 通信で取得してパースしたデータを格納する配列
+    private var pokemons: [Pokemon] = []
+
+    // ポケモンの全て18タイプを格納した配列
+    private var pokemonTypes: [PokemonType] = [
+        PokemonType(name: "normal"),
+        PokemonType(name: "fire"),
+        PokemonType(name: "water"),
+        PokemonType(name: "grass"),
+        PokemonType(name: "electric"),
+        PokemonType(name: "ice"),
+        PokemonType(name: "fighting"),
+        PokemonType(name: "poison"),
+        PokemonType(name: "ground"),
+        PokemonType(name: "flying"),
+        PokemonType(name: "psychic"),
+        PokemonType(name: "bug"),
+        PokemonType(name: "rock"),
+        PokemonType(name: "ghost"),
+        PokemonType(name: "dragon"),
+        PokemonType(name: "dark"),
+        PokemonType(name: "steel"),
+        PokemonType(name: "fairy")
+    ]
 
     private weak var view: PokemonListPresenterOutput!
     private var model: APIInput
@@ -54,7 +77,7 @@ final class PokemonListPresenter: PokemonListPresenterInput {
         self.view = view
         self.model = model
     }
-
+ 
     var numberOfPokemons: Int { pokemons.count }
 
     // アプリ起動時にviewから通知
