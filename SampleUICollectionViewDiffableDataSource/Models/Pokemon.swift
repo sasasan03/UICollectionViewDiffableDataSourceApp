@@ -8,7 +8,11 @@
 import Foundation
 
 // ポケモンのデータ構造
-struct Pokemon: Decodable {
+// 🍎Hashableにしたらインスタンスが一意となるようにUUIDの生成が必要なんじゃなかったか？
+struct Pokemon: Decodable, Hashable {
+    static func == (lhs: Pokemon, rhs: Pokemon) -> Bool {
+        lhs.id == rhs.id
+    }
     // ポケモンの名前
     let name: String
     // ポケモンの図鑑No.
@@ -18,11 +22,11 @@ struct Pokemon: Decodable {
     // ポケモンのタイプ
     let types: [TypeEntry]
     // ポケモンの説明文
-    let species: [SpeciesReference]
+//    let species: [SpeciesReference]
 }
 
 // 画像のデータ構造
-struct Image: Decodable {
+struct Image: Decodable, Hashable {
     // ポケモンが正面向きの画像
     let frontImage: String
 
@@ -33,17 +37,17 @@ struct Image: Decodable {
 }
 
 // ポケモンのタイプ
-struct TypeEntry: Decodable {
+struct TypeEntry: Decodable, Hashable {
   let type: Mode
 }
 
 // ポケモンの説明文のリンク
-struct SpeciesReference: Decodable {
+struct SpeciesReference: Decodable, Hashable {
     let url: String
   }
 
 // "Type"が命名で利用できず、他に適切な表現が思い浮かばなかった。
-struct Mode: Decodable {
+struct Mode: Decodable, Hashable {
 let name: String
 }
 

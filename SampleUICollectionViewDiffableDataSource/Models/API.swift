@@ -13,10 +13,11 @@ protocol APIInput {
 }
 
 
-final class API {
+final class API: APIInput {
     // 通信によって取得したデータをパース
     // 取得したポケモンのデータをSwiftの型として扱う為にデコード
     func decodePokemonData(completion: @escaping (Result<[Pokemon], Error>) -> Void) {
+        print(#function)
         // データの取得を実行
         fetchPokemonData(completion: { result in
             switch result {
@@ -52,12 +53,13 @@ final class API {
                 if let data = data {
                     dataArray.append(data)
                 }
+                if urls.count == dataArray.count {
+                    completion(.success(dataArray))
+                }
             })
             task.resume()
         }
-        if urls.count == dataArray.count {
-            completion(.success(dataArray))
-        }
+
     }
 
     // ポケモン151匹分のリクエストURLを取得
