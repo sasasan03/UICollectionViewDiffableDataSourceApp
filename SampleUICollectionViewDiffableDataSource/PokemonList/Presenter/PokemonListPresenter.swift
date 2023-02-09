@@ -23,6 +23,26 @@ protocol PokemonListPresenterOutput: AnyObject {
     func showAlertMessage(errorMessage: String)
 }
 
+// データソースに追加するSection
+enum Section: Int, CaseIterable {
+    case typeOfPokemonList, pokemonList
+
+    // Sectionごとの列数を返す
+    var columnCount: Int {
+        switch self {
+        case .typeOfPokemonList:
+            return 1
+        case .pokemonList:
+            return 2
+        }
+    }
+}
+
+// データソースに追加するItem
+struct DiffableItemData: Hashable {
+    var pokemons: [Pokemon] = []
+    var pokemonTypes: [PokemonType] = []
+}
 
 final class PokemonListPresenter: PokemonListPresenterInput {
     var pokemons: [Pokemon] = []
