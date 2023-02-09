@@ -6,11 +6,12 @@
 //
 
 import Foundation
+import UIKit
 
 // ViewからPresenterに処理を依頼する際の処理
 protocol PokemonListPresenterInput {
     var numberOfPokemons: Int { get }
-    func fetchPokemonData()
+    func viewDidLoad(collectionView: UICollectionView)
 //    func didTapTypeOfPokemonCell()
 //    func didTapPokemonCell()
 }
@@ -26,37 +27,37 @@ protocol PokemonListPresenterOutput: AnyObject {
 final class PokemonListPresenter: PokemonListPresenterInput {
     var pokemons: [Pokemon] = []
 
-    private weak var pokemonListVC: PokemonListPresenterOutput!
-    private var api: APIInput
+    private weak var view: PokemonListPresenterOutput!
+    private var model: APIInput
 
-    init(pokemonListVC: PokemonListPresenterOutput, api: APIInput) {
-        self.pokemonListVC = pokemonListVC
-        self.api = api
+    init(view: PokemonListPresenterOutput, model: APIInput) {
+        self.view = view
+        self.model = model
     }
 
     var numberOfPokemons: Int { pokemons.count }
 
-    func fetchPokemonData() {
-        pokemonListVC.startIndicator()
-        api.decodePokemonData(completion: { [weak self] result in
+    // アプリ起動時にviewから通知
+    func viewDidLoad(collectionView: UICollectionView) {
+        view.startIndicator()
+        model.decodePokemonData(completion: { [weak self] result in
             switch result {
             case .success(let pokemons):
                 self?.pokemons = pokemons
                 self?.pokemons.sort { $0.id < $1.id }
 
                 DispatchQueue.main.async {
-                    self?.pokemonListVC.updateView()
+                    self?.view.updateView()
                 }
             case .failure(let error as URLError):
                 DispatchQueue.main.async {
-                    self?.pokemonListVC.showAlertMessage(errorMessage: error.message)
+                    self?.view.showAlertMessage(errorMessage: error.message)
                 }
             case .failure:
                 fatalError("unexpected Errorr")
             }
         })
     }
-
 //    func didTapTypeOfPokemonCell() {
 //        <#code#>
 //    }
