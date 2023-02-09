@@ -45,6 +45,9 @@ struct DiffableItemData: Hashable {
 }
 
 final class PokemonListPresenter: PokemonListPresenterInput {
+    // ハードコーディング対策
+    static let storyboardName = "PokemonList"
+    
     // 通信で取得してパースしたデータを格納する配列
     private var pokemons: [Pokemon] = []
 

@@ -18,13 +18,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
 
-        let navigationController = UIStoryboard(name: PokemonListViewController.storyboardName, bundle: nil).instantiateInitialViewController() as! UINavigationController
+        let navigationController = UIStoryboard(name: PokemonListPresenter.storyboardName, bundle: nil).instantiateInitialViewController() as! UINavigationController
 
         let pokemonListVC = navigationController.viewControllers[0] as! PokemonListViewController
         
         let model = API()
         // PreseneterはViewのインスタンスを要求する為、Controllerのクラスファイルでselfを渡すわけにはいかず、SceneDelegateで処理を記述する必要がある。
-        let presenter = PokemonListPresenter(pokemonListVC: pokemonListVC, api: model)
+        let presenter = PokemonListPresenter(view: pokemonListVC, model: model)
         pokemonListVC.inject(presenter: presenter)
 
         window?.rootViewController = pokemonListVC
