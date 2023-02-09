@@ -9,7 +9,8 @@ import UIKit
 
 final class PokemonListViewController: UIViewController {
     @IBOutlet private weak var collectionView: UICollectionView!
-    
+    @IBOutlet private weak var indicator: UIActivityIndicatorView!
+
     // PresenterはSceneDelegateにて初期化
     var presenter: PokemonListPresenterInput!
     func inject(presenter: PokemonListPresenterInput) {
