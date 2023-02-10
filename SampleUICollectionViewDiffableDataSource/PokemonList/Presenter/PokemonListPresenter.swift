@@ -41,9 +41,9 @@ enum Section: Int, CaseIterable {
 }
 
 // データソースに追加するItem
-struct DiffableItemData: Hashable {
-    var pokemons: [Pokemon] = []
-    var pokemonTypes: [PokemonType] = []
+enum Item: Hashable {
+    case pokemon(Pokemon)
+    case type(PokemonType)
 }
 
 final class PokemonListPresenter: PokemonListPresenterInput {
