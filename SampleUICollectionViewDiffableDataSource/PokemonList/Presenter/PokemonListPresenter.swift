@@ -51,28 +51,28 @@ final class PokemonListPresenter: PokemonListPresenterInput {
     static let storyboardName = "PokemonList"
     
     // 通信で取得してパースしたデータを格納する配列
-    private var pokemons: [Pokemon] = []
+    private var pokemons: [Item] = []
 
-    // ポケモンの全て18タイプを格納した配列
-    private var pokemonTypes: [PokemonType] = [
-        PokemonType(name: "normal"),
-        PokemonType(name: "fire"),
-        PokemonType(name: "water"),
-        PokemonType(name: "grass"),
-        PokemonType(name: "electric"),
-        PokemonType(name: "ice"),
-        PokemonType(name: "fighting"),
-        PokemonType(name: "poison"),
-        PokemonType(name: "ground"),
-        PokemonType(name: "flying"),
-        PokemonType(name: "psychic"),
-        PokemonType(name: "bug"),
-        PokemonType(name: "rock"),
-        PokemonType(name: "ghost"),
-        PokemonType(name: "dragon"),
-        PokemonType(name: "dark"),
-        PokemonType(name: "steel"),
-        PokemonType(name: "fairy")
+    // ポケモンの全18タイプを格納した配列
+    private var pokemonTypes: [Item] = [
+        .type(PokemonType(name: "normal")),
+        .type(PokemonType(name: "fire")),
+        .type(PokemonType(name: "water")),
+        .type(PokemonType(name: "grass")),
+        .type(PokemonType(name: "electric")),
+        .type(PokemonType(name: "ice")),
+        .type(PokemonType(name: "fighting")),
+        .type(PokemonType(name: "poison")),
+        .type(PokemonType(name: "ground")),
+        .type(PokemonType(name: "flying")),
+        .type(PokemonType(name: "psychic")),
+        .type(PokemonType(name: "bug")),
+        .type(PokemonType(name: "rock")),
+        .type(PokemonType(name: "ghost")),
+        .type(PokemonType(name: "dragon")),
+        .type(PokemonType(name: "dark")),
+        .type(PokemonType(name: "steel")),
+        .type(PokemonType(name: "fairy"))
     ]
 
     private weak var view: PokemonListPresenterOutput!
@@ -128,8 +128,21 @@ final class PokemonListPresenter: PokemonListPresenterInput {
         model.decodePokemonData(completion: { [weak self] result in
             switch result {
             case .success(let pokemons):
-                self?.pokemons = pokemons
-                self?.pokemons.sort { $0.id < $1.id }
+                // 順次要素を追加
+                pokemons.forEach {
+                    self?.pokemons.append(.pokemon($0))
+                }
+
+                // ポケモン図鑑No.通り昇順になるよう並び替え
+                self?.pokemons.sort { a, b -> Bool in
+                    switch (a, b) {
+                    case let (.pokemon(pokemonA), .pokemon(pokemonB)):
+                        return pokemonA.id < pokemonB.id
+                    // 🍎本来ここは書きたくない。この実装はあくまでPokemonの配列に関する処理なので。これがenumで書くデメリットの一つ
+                    default:
+                        return true
+                    }
+                }
 
                 DispatchQueue.main.async {
                     self?.view.updateView()
@@ -150,8 +163,21 @@ final class PokemonListPresenter: PokemonListPresenterInput {
         model.decodePokemonData(completion: { [weak self] result in
             switch result {
             case .success(let pokemons):
-                self?.pokemons = pokemons
-                self?.pokemons.sort { $0.id < $1.id }
+                // 順次要素を追加
+                pokemons.forEach {
+                    self?.pokemons.append(.pokemon($0))
+                }
+
+                // ポケモン図鑑No.通り昇順になるよう並び替え
+                self?.pokemons.sort { a, b -> Bool in
+                    switch (a, b) {
+                    case let (.pokemon(pokemonA), .pokemon(pokemonB)):
+                        return pokemonA.id < pokemonB.id
+                    // 🍎本来ここは書きたくない。この実装はあくまでPokemonの配列に関する処理なので。これがenumで書くデメリットの一つ
+                    default:
+                        return true
+                    }
+                }
 
                 DispatchQueue.main.async {
                     self?.view.updateView()
