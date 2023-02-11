@@ -73,9 +73,7 @@ extension PokemonListViewController {
 // CollectionViewのLayoutを定義
 extension PokemonListViewController {
     private func createLayout() -> UICollectionViewLayout {
-        let layout = UICollectionViewCompositionalLayout { (sectionIndex: Int,
-            layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
-
+        let layout = UICollectionViewCompositionalLayout { (sectionIndex: Int, _: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
             guard let sectionKind = Section(rawValue: sectionIndex) else { return nil }
             // Sectionごとの列数を代入
             let columns = sectionKind.columnCount

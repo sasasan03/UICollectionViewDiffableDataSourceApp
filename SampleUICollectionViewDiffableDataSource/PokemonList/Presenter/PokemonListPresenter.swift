@@ -84,20 +84,19 @@ final class PokemonListPresenter: PokemonListPresenterInput {
     }
 
     // データソースを定義
-    private var dataSource: UICollectionViewDiffableDataSource<Section, AnyHashable>!
+    private var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
 
     // データソースを構築
     private func configureDataSource(collectionView: UICollectionView) {
-        dataSource = UICollectionViewDiffableDataSource<Section, AnyHashable>(collectionView: collectionView, cellProvider: { (collectionView: UICollectionView, indexpath: IndexPath, item: AnyHashable) -> UICollectionViewCell? in
-            guard let self = self else { return }
-            switch indexpath.section {
-            case 0:
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PokemonTypeCell.identifier, for: indexpath) as! PokemonTypeCell
-                cell.configure(type: self.pokemonTypes[indexpath.row].name)
-                return cell
-            default:
+        dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { (collectionView: UICollectionView, indexpath: IndexPath, item: Item) -> UICollectionViewCell? in
+            switch item {
+            case .pokemon(let pokemon):
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PokemonCell.identifier, for: indexpath) as! PokemonCell
-                cell.configure(imageURL: self.pokemons[indexpath.row].sprites.frontImage, name: self.pokemons[indexpath.row].name)
+                cell.configure(imageURL: pokemon.sprites.frontImage, name: pokemon.name)
+                return cell
+            case .type(let pokemonType):
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PokemonTypeCell.identifier, for: indexpath) as! PokemonTypeCell
+                cell.configure(type: pokemonType.name)
                 return cell
             }
         })
@@ -107,14 +106,14 @@ final class PokemonListPresenter: PokemonListPresenterInput {
     // データソースにデータを登録
     private func applySnapshot() {
         // データをViewに反映させる為のDiffableDataSourceSnapshotクラスのインスタンスを生成
-        var snapshot = NSDiffableDataSourceSnapshot<Section, AnyHashable>()
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
 
         // snapshotにSecrtionを追加
         snapshot.appendSections(Section.allCases)
 
         // snapshotにItemを追加
-        snapshot.appendItems(pokemonTypes.map { $0 as AnyHashable }, toSection: .typeOfPokemonList)
-        snapshot.appendItems(pokemons.map { $0 as AnyHashable }, toSection: .pokemonList)
+        snapshot.appendItems(pokemons, toSection: .pokemonList)
+        snapshot.appendItems(pokemonTypes, toSection: .typeOfPokemonList)
 
         // データをViewに表示する処理を実行
         dataSource.apply(snapshot)
@@ -145,6 +144,7 @@ final class PokemonListPresenter: PokemonListPresenterInput {
                 }
 
                 DispatchQueue.main.async {
+                    self?.configureDataSource(collectionView: collectionView)
                     self?.view.updateView()
                 }
             case .failure(let error as URLError):
