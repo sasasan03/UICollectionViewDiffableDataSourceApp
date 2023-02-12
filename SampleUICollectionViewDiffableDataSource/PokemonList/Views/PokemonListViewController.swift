@@ -25,6 +25,7 @@ final class PokemonListViewController: UIViewController {
 
     // Cellのレイアウトを構築
     private func setUpCollectionView() {
+        collectionView.delegate = self
         configureHierarchy()
     }
 }
@@ -57,6 +58,14 @@ extension PokemonListViewController: PokemonListPresenterOutput {
 
         present(alertController, animated: true)
     }
+}
+
+// Cellタップ時に実行
+extension PokemonListViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    }
+    // PokemonTypeCellタップ時に実行する処理
+    // PokemonCellタップ時に実行する処理
 }
 
 
