@@ -30,6 +30,10 @@ final class PokemonListViewController: UIViewController {
 }
 
 extension PokemonListViewController: PokemonListPresenterOutput {
+    func updatePokemonTypeCellColor(item: Item) {
+        <#code#>
+    }
+
     // インジケータを起動させる
     func startIndicator() {
         view.alpha = 0.5

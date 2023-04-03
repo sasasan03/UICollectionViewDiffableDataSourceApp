@@ -40,12 +40,6 @@ enum Section: Int, CaseIterable {
     }
 }
 
-// データソースに追加するItem
-enum Item: Hashable {
-    case pokemon(Pokemon)
-    case type(PokemonType)
-}
-
 final class PokemonListPresenter: PokemonListPresenterInput {
     // ハードコーディング対策
     static let storyboardName = "PokemonList"
