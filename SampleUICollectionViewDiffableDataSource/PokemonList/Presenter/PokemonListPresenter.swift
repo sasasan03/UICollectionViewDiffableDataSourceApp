@@ -27,12 +27,12 @@ protocol PokemonListPresenterOutput: AnyObject {
 
 // データソースに追加するSection
 enum Section: Int, CaseIterable {
-    case typeOfPokemonList, pokemonList
+    case PokemontypeList, pokemonList
 
     // Sectionごとの列数を返す
     var columnCount: Int {
         switch self {
-        case .typeOfPokemonList:
+        case .PokemontypeList:
             return 1
         case .pokemonList:
             return 2
@@ -65,18 +65,37 @@ final class PokemonListPresenter: PokemonListPresenterInput {
 
     // データソースを構築
     private func configureDataSource(collectionView: UICollectionView) {
-        dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { (collectionView: UICollectionView, indexpath: IndexPath, item: Item) -> UICollectionViewCell? in
-            switch item {
-            case .pokemon(let pokemon):
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PokemonCell.identifier, for: indexpath) as! PokemonCell
-                cell.configure(imageURL: pokemon.sprites.frontImage, name: pokemon.name)
-                return cell
-            case .type(let pokemonType):
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PokemonTypeCell.identifier, for: indexpath) as! PokemonTypeCell
-                cell.configure(type: pokemonType.name)
-                return cell
+        // pokemonTypeCellの登録
+        // 🍏UINibクラス型の引数『cellNib』にPokemonTypeCellクラスで定義したUINibクラス※1を指定
+        // ※1: static let nib = UINib(nibName: String(describing: PokemonTypeCell.self), bundle: nil)
+        let pokemonTypeCellRegistration = UICollectionView.CellRegistration<PokemonTypeCell, Item>(cellNib: PokemonTypeCell.nib) { cell, indexPath, item in
+            cell.layer.cornerRadius = 15
+            cell.configure(type: item.pokemonType)
+        }
+
+        // pokemonCellの登録
+        let pokemonCellRegistration = UICollectionView.CellRegistration<PokemonCell, Item>(cellNib: PokemonCell.nib) { cell, indexpath, item in
+            // Cellの構築処理
+            cell.configure(imageURL: item.pokemon?.sprites.frontImage, name: item.pokemon?.name)
+        }
+
+        // data sourceの構築
+        dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView) {
+            (collectionView, indexPath, item) -> UICollectionViewCell? in
+            guard let section = Section(rawValue: indexPath.section) else { fatalError("Unknown section") }
+            switch section {
+            case .PokemontypeList:
+                return collectionView.dequeueConfiguredReusableCell(using: pokemonTypeCellRegistration,
+                                                                    for: indexPath,
+                                                                    item: item
+                )
+            case .pokemonList:
+                return collectionView.dequeueConfiguredReusableCell(using: pokemonCellRegistration,
+                                                                    for: indexPath,
+                                                                    item: item
+                )
             }
-        })
+        }
         applySnapshot()
     }
 
@@ -90,7 +109,7 @@ final class PokemonListPresenter: PokemonListPresenterInput {
 
         // snapshotにItemを追加
         snapshot.appendItems(pokemons, toSection: .pokemonList)
-        snapshot.appendItems(pokemonTypes, toSection: .typeOfPokemonList)
+        snapshot.appendItems(pokemonTypes, toSection: .PokemontypeList)
 
         // データをViewに表示する処理を実行
         dataSource.apply(snapshot)
