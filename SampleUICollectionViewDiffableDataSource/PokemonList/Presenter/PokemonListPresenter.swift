@@ -46,28 +46,11 @@ final class PokemonListPresenter: PokemonListPresenterInput {
     
     // 通信で取得してパースしたデータを格納する配列
     private var pokemons: [Item] = []
-
-    // ポケモンの全18タイプを格納した配列
-    private var pokemonTypes: [Item] = [
-        .type(PokemonType(name: "normal")),
-        .type(PokemonType(name: "fire")),
-        .type(PokemonType(name: "water")),
-        .type(PokemonType(name: "grass")),
-        .type(PokemonType(name: "electric")),
-        .type(PokemonType(name: "ice")),
-        .type(PokemonType(name: "fighting")),
-        .type(PokemonType(name: "poison")),
-        .type(PokemonType(name: "ground")),
-        .type(PokemonType(name: "flying")),
-        .type(PokemonType(name: "psychic")),
-        .type(PokemonType(name: "bug")),
-        .type(PokemonType(name: "rock")),
-        .type(PokemonType(name: "ghost")),
-        .type(PokemonType(name: "dragon")),
-        .type(PokemonType(name: "dark")),
-        .type(PokemonType(name: "steel")),
-        .type(PokemonType(name: "fairy"))
-    ]
+    // ポケモンのタイプをまとめるSet
+    private var pokemonTypes = Set<String>()
+    // CellのLabel&Snapshotに渡すデータの配列
+    // タイプ一覧のSetの要素をItemインスタンスの初期値に指定し、mapで配列にして返す
+    private lazy var pokemomnTypeItems = pokemonTypes.map { Item(pokemonType: $0) }
 
     private weak var view: PokemonListPresenterOutput!
     private var model: APIInput
