@@ -27,12 +27,12 @@ protocol PokemonListPresenterOutput: AnyObject {
 
 // データソースに追加するSection
 enum Section: Int, CaseIterable {
-    case PokemontypeList, pokemonList
+    case PokemonTypeList, pokemonList
 
     // Sectionごとの列数を返す
     var columnCount: Int {
         switch self {
-        case .PokemontypeList:
+        case .PokemonTypeList:
             return 1
         case .pokemonList:
             return 2
@@ -49,8 +49,10 @@ final class PokemonListPresenter: PokemonListPresenterInput {
     // ポケモンのタイプをまとめるSet
     private var pokemonTypes = Set<String>()
     // CellのLabel&Snapshotに渡すデータの配列
-    // タイプ一覧のSetの要素をItemインスタンスの初期値に指定し、mapで配列にして返す
-    private lazy var pokemomnTypeItems = pokemonTypes.map { Item(pokemonType: $0) }
+    // PokemonTypeListのSetの要素をItemインスタンスの初期値に指定し、mapで配列にして返す
+    private lazy var pokemonTypeItems = pokemonTypes.map { Item(pokemonType: $0) }
+    // PokemonTypeListの最初に置き、タップすると全タイプのポケモンを表示させる
+    private let allTypes = "all"
 
     private weak var view: PokemonListPresenterOutput!
     private var model: APIInput
@@ -84,7 +86,7 @@ final class PokemonListPresenter: PokemonListPresenterInput {
             (collectionView, indexPath, item) -> UICollectionViewCell? in
             guard let section = Section(rawValue: indexPath.section) else { fatalError("Unknown section") }
             switch section {
-            case .PokemontypeList:
+            case .PokemonTypeList:
                 return collectionView.dequeueConfiguredReusableCell(using: pokemonTypeCellRegistration,
                                                                     for: indexPath,
                                                                     item: item
@@ -96,26 +98,29 @@ final class PokemonListPresenter: PokemonListPresenterInput {
                 )
             }
         }
-        applySnapshot()
+        applyInitialSnapshots()
     }
 
-    // データソースにデータを登録
-    private func applySnapshot() {
+    // 画面起動時にDataSourceにデータを登録
+    private func applyInitialSnapshots() {
         // データをViewに反映させる為のDiffableDataSourceSnapshotクラスのインスタンスを生成
         var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
-
         // snapshotにSecrtionを追加
         snapshot.appendSections(Section.allCases)
-
-        // snapshotにItemを追加
-        snapshot.appendItems(pokemons, toSection: .pokemonList)
-        snapshot.appendItems(pokemonTypes, toSection: .PokemontypeList)
-
-        // データをViewに表示する処理を実行
         dataSource.apply(snapshot)
-    }
 
-    var numberOfPokemons: Int { pokemons.count }
+        // pokemonTypeListのItemをSnapshotに追加 (orthogonal scroller)
+        // 全タイプ対象のItemを追加
+        pokemonTypeItems.insert(Item(pokemonType: allTypes), at: 0)
+        var pokemonTypeSnapshot = NSDiffableDataSourceSectionSnapshot<Item>()
+        pokemonTypeSnapshot.append(pokemonTypeItems)
+        dataSource.apply(pokemonTypeSnapshot, to: .PokemonTypeList, animatingDifferences: true)
+
+        // pokemonListのItemをSnapshotに追加
+        var pokemonListSnapshot = NSDiffableDataSourceSectionSnapshot<Item>()
+        pokemonListSnapshot.append(pokemons)
+        dataSource.apply(pokemonListSnapshot, to: .pokemonList, animatingDifferences: true)
+    }
 
     // アプリ起動時にviewから通知
     func viewDidLoad(collectionView: UICollectionView) {
