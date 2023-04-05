@@ -10,7 +10,7 @@ import UIKit
 
 // ViewからPresenterに処理を依頼する際の処理
 protocol PokemonListPresenterInput {
-    var numberOfPokemons: Int { get }
+//    var numberOfPokemons: Int { get }
     func viewDidLoad(collectionView: UICollectionView)
     func didTapRestartURLSessionButton()
     func didTapAlertCancelButton()
@@ -136,8 +136,8 @@ final class PokemonListPresenter: PokemonListPresenterInput {
                 // ポケモン図鑑No.の昇順になるよう並び替え
                 self?.pokemons.sort {
                     guard let pokedexNumber = $0.pokemon else { fatalError("unexpectedError") }
-                    guard let pokedexNumber2 = $1.pokemon else { fatalError("unexpectedError") }
-                    return pokedexNumber.id < pokedexNumber2.id
+                    guard let anotherPokedexNumber = $1.pokemon else { fatalError("unexpectedError") }
+                    return pokedexNumber.id < anotherPokedexNumber.id
                 }
 
                 // Setは要素を一意にする為、一度追加されたタイプを自動で省いてくれる。(例: フシギダネが呼ばれると草タイプと毒タイプを取得するので次のフシギソウのタイプは追加されない。
@@ -165,8 +165,11 @@ final class PokemonListPresenter: PokemonListPresenterInput {
         view.startIndicator()
         model.decodePokemonData(completion: { [weak self] result in
             switch result {
-            case .success(let pokemons):
+            case .success(let pokemonsData):
                 // 順次要素を追加
+                pokemonsData.forEach {
+                    self?.pokemons.append(Item(pokemon: $0))
+                }
                 // ポケモン図鑑No.の昇順になるよう並び替え
                 self?.pokemons.sort {
                     guard let pokedexNumber = $0.pokemon else { fatalError("unexpectedError") }
