@@ -127,25 +127,27 @@ final class PokemonListPresenter: PokemonListPresenterInput {
         view.startIndicator()
         model.decodePokemonData(completion: { [weak self] result in
             switch result {
-            case .success(let pokemons):
+            case .success(let pokemonsData):
                 // 順次要素を追加
-                pokemons.forEach {
-                    self?.pokemons.append(.pokemon($0))
+                pokemonsData.forEach {
+                    self?.pokemons.append(Item(pokemon: $0))
                 }
 
-                // ポケモン図鑑No.通り昇順になるよう並び替え
-                self?.pokemons.sort { a, b -> Bool in
-                    switch (a, b) {
-                    case let (.pokemon(pokemonA), .pokemon(pokemonB)):
-                        return pokemonA.id < pokemonB.id
-                    // 🍎本来ここは書きたくない。この実装はあくまでPokemonの配列に関する処理なので。これがenumで書くデメリットの一つ
-                    default:
-                        return true
-                    }
+                // ポケモン図鑑No.の昇順になるよう並び替え
+                self?.pokemons.sort {
+                    guard let pokedexNumber = $0.pokemon else { fatalError("unexpectedError") }
+                    guard let pokedexNumber2 = $1.pokemon else { fatalError("unexpectedError") }
+                    return pokedexNumber.id < pokedexNumber2.id
+                }
+
+                // Setは要素を一意にする為、一度追加されたタイプを自動で省いてくれる。(例: フシギダネが呼ばれると草タイプと毒タイプを取得するので次のフシギソウのタイプは追加されない。
+                //結果としてタイプリストの重複を避けることができる
+                self?.pokemons.forEach {
+                    $0.pokemon?.types.forEach { self?.pokemonTypes.insert($0.type.name) }
                 }
 
                 DispatchQueue.main.async {
-                    self?.configureDataSource(collectionView: collectionView)
+                    self?.applyInitialSnapshots()
                     self?.view.updateView()
                 }
             case .failure(let error as URLError):
@@ -165,19 +167,17 @@ final class PokemonListPresenter: PokemonListPresenterInput {
             switch result {
             case .success(let pokemons):
                 // 順次要素を追加
-                pokemons.forEach {
-                    self?.pokemons.append(.pokemon($0))
+                // ポケモン図鑑No.の昇順になるよう並び替え
+                self?.pokemons.sort {
+                    guard let pokedexNumber = $0.pokemon else { fatalError("unexpectedError") }
+                    guard let pokedexNumber2 = $1.pokemon else { fatalError("unexpectedError") }
+                    return pokedexNumber.id < pokedexNumber2.id
                 }
 
-                // ポケモン図鑑No.通り昇順になるよう並び替え
-                self?.pokemons.sort { a, b -> Bool in
-                    switch (a, b) {
-                    case let (.pokemon(pokemonA), .pokemon(pokemonB)):
-                        return pokemonA.id < pokemonB.id
-                    // 🍎本来ここは書きたくない。この実装はあくまでPokemonの配列に関する処理なので。これがenumで書くデメリットの一つ
-                    default:
-                        return true
-                    }
+                // Setは要素を一意にする為、一度追加されたタイプを自動で省いてくれる。(例: フシギダネが呼ばれると草タイプと毒タイプを取得するので次のフシギソウのタイプは追加されない。
+                //結果としてタイプリストの重複を避けることができる
+                self?.pokemons.forEach {
+                    $0.pokemon?.types.forEach { self?.pokemonTypes.insert($0.type.name) }
                 }
 
                 DispatchQueue.main.async {
