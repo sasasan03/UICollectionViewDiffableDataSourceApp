@@ -117,7 +117,7 @@ extension Section {
     // SectionごとのScroll方向を返す ※これは描画処理な気もするので
     var orthgonalScrollingBehavior: UICollectionLayoutSectionOrthogonalScrollingBehavior {
         switch self {
-        case .typeOfPokemonList:
+        case .pokemonTypeList:
             return .continuous
         case .pokemonList:
             return .none

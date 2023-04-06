@@ -16,6 +16,7 @@ final class PokemonCell: UICollectionViewCell {
     static let identifier = String(describing: PokemonCell.self)
 
     func configure(imageURL: String?, name: String?) {
+        guard let imageURL = imageURL else { fatalError("UnexpectedError") }
         iconView.kf.setImage(with: URL(string: imageURL))
         nameLabel.text = name
     }

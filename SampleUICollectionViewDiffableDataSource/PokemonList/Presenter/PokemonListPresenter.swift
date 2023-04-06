@@ -27,12 +27,12 @@ protocol PokemonListPresenterOutput: AnyObject {
 
 // データソースに追加するSection
 enum Section: Int, CaseIterable {
-    case PokemonTypeList, pokemonList
+    case pokemonTypeList, pokemonList
 
     // Sectionごとの列数を返す
     var columnCount: Int {
         switch self {
-        case .PokemonTypeList:
+        case .pokemonTypeList:
             return 1
         case .pokemonList:
             return 2
@@ -86,7 +86,7 @@ final class PokemonListPresenter: PokemonListPresenterInput {
             (collectionView, indexPath, item) -> UICollectionViewCell? in
             guard let section = Section(rawValue: indexPath.section) else { fatalError("Unknown section") }
             switch section {
-            case .PokemonTypeList:
+            case .pokemonTypeList:
                 return collectionView.dequeueConfiguredReusableCell(using: pokemonTypeCellRegistration,
                                                                     for: indexPath,
                                                                     item: item
@@ -114,7 +114,7 @@ final class PokemonListPresenter: PokemonListPresenterInput {
         pokemonTypeItems.insert(Item(pokemonType: allTypes), at: 0)
         var pokemonTypeSnapshot = NSDiffableDataSourceSectionSnapshot<Item>()
         pokemonTypeSnapshot.append(pokemonTypeItems)
-        dataSource.apply(pokemonTypeSnapshot, to: .PokemonTypeList, animatingDifferences: true)
+        dataSource.apply(pokemonTypeSnapshot, to: .pokemonTypeList, animatingDifferences: true)
 
         // pokemonListのItemをSnapshotに追加
         var pokemonListSnapshot = NSDiffableDataSourceSectionSnapshot<Item>()
