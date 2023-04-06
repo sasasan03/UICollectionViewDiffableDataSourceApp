@@ -70,20 +70,19 @@ final class PokemonListPresenter: PokemonListPresenterInput {
         // pokemonTypeCellの登録
         // 🍏UINibクラス型の引数『cellNib』にPokemonTypeCellクラスで定義したUINibクラス※1を指定
         // ※1: static let nib = UINib(nibName: String(describing: PokemonTypeCell.self), bundle: nil)
-        let pokemonTypeCellRegistration = UICollectionView.CellRegistration<PokemonTypeCell, Item>(cellNib: PokemonTypeCell.nib) { cell, indexPath, item in
+        let pokemonTypeCellRegistration = UICollectionView.CellRegistration<PokemonTypeCell, Item>(cellNib: PokemonTypeCell.nib) { cell, _, item in
             cell.layer.cornerRadius = 15
             cell.configure(type: item.pokemonType)
         }
 
         // pokemonCellの登録
-        let pokemonCellRegistration = UICollectionView.CellRegistration<PokemonCell, Item>(cellNib: PokemonCell.nib) { cell, indexpath, item in
+        let pokemonCellRegistration = UICollectionView.CellRegistration<PokemonCell, Item>(cellNib: PokemonCell.nib) { cell, _, item in
             // Cellの構築処理
             cell.configure(imageURL: item.pokemon?.sprites.frontImage, name: item.pokemon?.name)
         }
 
         // data sourceの構築
-        dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView) {
-            (collectionView, indexPath, item) -> UICollectionViewCell? in
+        dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView) { collectionView, indexPath, item -> UICollectionViewCell? in
             guard let section = Section(rawValue: indexPath.section) else { fatalError("Unknown section") }
             switch section {
             case .pokemonTypeList:
@@ -98,7 +97,6 @@ final class PokemonListPresenter: PokemonListPresenterInput {
                 )
             }
         }
-        applyInitialSnapshots()
     }
 
     // 画面起動時にDataSourceにデータを登録
@@ -125,6 +123,7 @@ final class PokemonListPresenter: PokemonListPresenterInput {
     // アプリ起動時にviewから通知
     func viewDidLoad(collectionView: UICollectionView) {
         view.startIndicator()
+        configureDataSource(collectionView: collectionView)
         model.decodePokemonData(completion: { [weak self] result in
             switch result {
             case .success(let pokemonsData):
@@ -141,7 +140,7 @@ final class PokemonListPresenter: PokemonListPresenterInput {
                 }
 
                 // Setは要素を一意にする為、一度追加されたタイプを自動で省いてくれる。(例: フシギダネが呼ばれると草タイプと毒タイプを取得するので次のフシギソウのタイプは追加されない。
-                //結果としてタイプリストの重複を避けることができる
+                // 結果としてタイプリストの重複を避けることができる
                 self?.pokemons.forEach {
                     $0.pokemon?.types.forEach { self?.pokemonTypes.insert($0.type.name) }
                 }
@@ -178,7 +177,7 @@ final class PokemonListPresenter: PokemonListPresenterInput {
                 }
 
                 // Setは要素を一意にする為、一度追加されたタイプを自動で省いてくれる。(例: フシギダネが呼ばれると草タイプと毒タイプを取得するので次のフシギソウのタイプは追加されない。
-                //結果としてタイプリストの重複を避けることができる
+                // 結果としてタイプリストの重複を避けることができる
                 self?.pokemons.forEach {
                     $0.pokemon?.types.forEach { self?.pokemonTypes.insert($0.type.name) }
                 }
