@@ -31,6 +31,10 @@ final class PokemonListViewController: UIViewController {
 }
 
 extension PokemonListViewController: PokemonListPresenterOutput {
+//    func updatePokemonTypeCellColor(item: Item) {
+//        <#code#>
+//    }
+
     // インジケータを起動させる
     func startIndicator() {
         view.alpha = 0.5
@@ -122,7 +126,7 @@ extension Section {
     // SectionごとのScroll方向を返す ※これは描画処理な気もするので
     var orthgonalScrollingBehavior: UICollectionLayoutSectionOrthogonalScrollingBehavior {
         switch self {
-        case .typeOfPokemonList:
+        case .pokemonTypeList:
             return .continuous
         case .pokemonList:
             return .none

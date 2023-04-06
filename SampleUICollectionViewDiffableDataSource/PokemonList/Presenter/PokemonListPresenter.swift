@@ -10,7 +10,7 @@ import UIKit
 
 // ViewからPresenterに処理を依頼する際の処理
 protocol PokemonListPresenterInput {
-    var numberOfPokemons: Int { get }
+//    var numberOfPokemons: Int { get }
     func viewDidLoad(collectionView: UICollectionView)
     func didTapRestartURLSessionButton()
     func didTapAlertCancelButton()
@@ -27,23 +27,17 @@ protocol PokemonListPresenterOutput: AnyObject {
 
 // データソースに追加するSection
 enum Section: Int, CaseIterable {
-    case typeOfPokemonList, pokemonList
+    case pokemonTypeList, pokemonList
 
     // Sectionごとの列数を返す
     var columnCount: Int {
         switch self {
-        case .typeOfPokemonList:
+        case .pokemonTypeList:
             return 1
         case .pokemonList:
             return 2
         }
     }
-}
-
-// データソースに追加するItem
-enum Item: Hashable {
-    case pokemon(Pokemon)
-    case type(PokemonType)
 }
 
 final class PokemonListPresenter: PokemonListPresenterInput {
@@ -52,28 +46,13 @@ final class PokemonListPresenter: PokemonListPresenterInput {
     
     // 通信で取得してパースしたデータを格納する配列
     private var pokemons: [Item] = []
-
-    // ポケモンの全18タイプを格納した配列
-    private var pokemonTypes: [Item] = [
-        .type(PokemonType(name: "normal")),
-        .type(PokemonType(name: "fire")),
-        .type(PokemonType(name: "water")),
-        .type(PokemonType(name: "grass")),
-        .type(PokemonType(name: "electric")),
-        .type(PokemonType(name: "ice")),
-        .type(PokemonType(name: "fighting")),
-        .type(PokemonType(name: "poison")),
-        .type(PokemonType(name: "ground")),
-        .type(PokemonType(name: "flying")),
-        .type(PokemonType(name: "psychic")),
-        .type(PokemonType(name: "bug")),
-        .type(PokemonType(name: "rock")),
-        .type(PokemonType(name: "ghost")),
-        .type(PokemonType(name: "dragon")),
-        .type(PokemonType(name: "dark")),
-        .type(PokemonType(name: "steel")),
-        .type(PokemonType(name: "fairy"))
-    ]
+    // ポケモンのタイプをまとめるSet
+    private var pokemonTypes = Set<String>()
+    // CellのLabel&Snapshotに渡すデータの配列
+    // PokemonTypeListのSetの要素をItemインスタンスの初期値に指定し、mapで配列にして返す
+    private lazy var pokemonTypeItems = pokemonTypes.map { Item(pokemonType: $0) }
+    // PokemonTypeListの最初に置き、タップすると全タイプのポケモンを表示させる
+    private let allTypes = "all"
 
     private weak var view: PokemonListPresenterOutput!
     private var model: APIInput
@@ -88,63 +67,86 @@ final class PokemonListPresenter: PokemonListPresenterInput {
 
     // データソースを構築
     private func configureDataSource(collectionView: UICollectionView) {
-        dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { (collectionView: UICollectionView, indexpath: IndexPath, item: Item) -> UICollectionViewCell? in
-            switch item {
-            case .pokemon(let pokemon):
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PokemonCell.identifier, for: indexpath) as! PokemonCell
-                cell.configure(imageURL: pokemon.sprites.frontImage, name: pokemon.name)
-                return cell
-            case .type(let pokemonType):
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PokemonTypeCell.identifier, for: indexpath) as! PokemonTypeCell
-                cell.configure(type: pokemonType.name)
-                return cell
+        // pokemonTypeCellの登録
+        // 🍏UINibクラス型の引数『cellNib』にPokemonTypeCellクラスで定義したUINibクラス※1を指定
+        // ※1: static let nib = UINib(nibName: String(describing: PokemonTypeCell.self), bundle: nil)
+        let pokemonTypeCellRegistration = UICollectionView.CellRegistration<PokemonTypeCell, Item>(cellNib: PokemonTypeCell.nib) { cell, _, item in
+            cell.layer.cornerRadius = 15
+            cell.configure(type: item.pokemonType)
+        }
+
+        // pokemonCellの登録
+        let pokemonCellRegistration = UICollectionView.CellRegistration<PokemonCell, Item>(cellNib: PokemonCell.nib) { cell, _, item in
+            // Cellの構築処理
+            cell.configure(imageURL: item.pokemon?.sprites.frontImage, name: item.pokemon?.name)
+        }
+
+        // data sourceの構築
+        dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView) { collectionView, indexPath, item -> UICollectionViewCell? in
+            guard let section = Section(rawValue: indexPath.section) else { fatalError("Unknown section") }
+            switch section {
+            case .pokemonTypeList:
+                return collectionView.dequeueConfiguredReusableCell(using: pokemonTypeCellRegistration,
+                                                                    for: indexPath,
+                                                                    item: item
+                )
+            case .pokemonList:
+                return collectionView.dequeueConfiguredReusableCell(using: pokemonCellRegistration,
+                                                                    for: indexPath,
+                                                                    item: item
+                )
             }
-        })
-        applySnapshot()
+        }
     }
 
-    // データソースにデータを登録
-    private func applySnapshot() {
+    // 画面起動時にDataSourceにデータを登録
+    private func applyInitialSnapshots() {
         // データをViewに反映させる為のDiffableDataSourceSnapshotクラスのインスタンスを生成
         var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
-
         // snapshotにSecrtionを追加
         snapshot.appendSections(Section.allCases)
-
-        // snapshotにItemを追加
-        snapshot.appendItems(pokemons, toSection: .pokemonList)
-        snapshot.appendItems(pokemonTypes, toSection: .typeOfPokemonList)
-
-        // データをViewに表示する処理を実行
         dataSource.apply(snapshot)
-    }
 
-    var numberOfPokemons: Int { pokemons.count }
+        // pokemonTypeListのItemをSnapshotに追加 (orthogonal scroller)
+        // 全タイプ対象のItemを追加
+        pokemonTypeItems.insert(Item(pokemonType: allTypes), at: 0)
+        var pokemonTypeSnapshot = NSDiffableDataSourceSectionSnapshot<Item>()
+        pokemonTypeSnapshot.append(pokemonTypeItems)
+        dataSource.apply(pokemonTypeSnapshot, to: .pokemonTypeList, animatingDifferences: true)
+
+        // pokemonListのItemをSnapshotに追加
+        var pokemonListSnapshot = NSDiffableDataSourceSectionSnapshot<Item>()
+        pokemonListSnapshot.append(pokemons)
+        dataSource.apply(pokemonListSnapshot, to: .pokemonList, animatingDifferences: true)
+    }
 
     // アプリ起動時にviewから通知
     func viewDidLoad(collectionView: UICollectionView) {
         view.startIndicator()
+        configureDataSource(collectionView: collectionView)
         model.decodePokemonData(completion: { [weak self] result in
             switch result {
-            case .success(let pokemons):
+            case .success(let pokemonsData):
                 // 順次要素を追加
-                pokemons.forEach {
-                    self?.pokemons.append(.pokemon($0))
+                pokemonsData.forEach {
+                    self?.pokemons.append(Item(pokemon: $0))
                 }
 
-                // ポケモン図鑑No.通り昇順になるよう並び替え
-                self?.pokemons.sort { a, b -> Bool in
-                    switch (a, b) {
-                    case let (.pokemon(pokemonA), .pokemon(pokemonB)):
-                        return pokemonA.id < pokemonB.id
-                    // 🍎本来ここは書きたくない。この実装はあくまでPokemonの配列に関する処理なので。これがenumで書くデメリットの一つ
-                    default:
-                        return true
-                    }
+                // ポケモン図鑑No.の昇順になるよう並び替え
+                self?.pokemons.sort {
+                    guard let pokedexNumber = $0.pokemon else { fatalError("unexpectedError") }
+                    guard let anotherPokedexNumber = $1.pokemon else { fatalError("unexpectedError") }
+                    return pokedexNumber.id < anotherPokedexNumber.id
+                }
+
+                // Setは要素を一意にする為、一度追加されたタイプを自動で省いてくれる。(例: フシギダネが呼ばれると草タイプと毒タイプを取得するので次のフシギソウのタイプは追加されない。
+                // 結果としてタイプリストの重複を避けることができる
+                self?.pokemons.forEach {
+                    $0.pokemon?.types.forEach { self?.pokemonTypes.insert($0.type.name) }
                 }
 
                 DispatchQueue.main.async {
-                    self?.configureDataSource(collectionView: collectionView)
+                    self?.applyInitialSnapshots()
                     self?.view.updateView()
                 }
             case .failure(let error as URLError):
@@ -162,21 +164,22 @@ final class PokemonListPresenter: PokemonListPresenterInput {
         view.startIndicator()
         model.decodePokemonData(completion: { [weak self] result in
             switch result {
-            case .success(let pokemons):
+            case .success(let pokemonsData):
                 // 順次要素を追加
-                pokemons.forEach {
-                    self?.pokemons.append(.pokemon($0))
+                pokemonsData.forEach {
+                    self?.pokemons.append(Item(pokemon: $0))
+                }
+                // ポケモン図鑑No.の昇順になるよう並び替え
+                self?.pokemons.sort {
+                    guard let pokedexNumber = $0.pokemon else { fatalError("unexpectedError") }
+                    guard let pokedexNumber2 = $1.pokemon else { fatalError("unexpectedError") }
+                    return pokedexNumber.id < pokedexNumber2.id
                 }
 
-                // ポケモン図鑑No.通り昇順になるよう並び替え
-                self?.pokemons.sort { a, b -> Bool in
-                    switch (a, b) {
-                    case let (.pokemon(pokemonA), .pokemon(pokemonB)):
-                        return pokemonA.id < pokemonB.id
-                    // 🍎本来ここは書きたくない。この実装はあくまでPokemonの配列に関する処理なので。これがenumで書くデメリットの一つ
-                    default:
-                        return true
-                    }
+                // Setは要素を一意にする為、一度追加されたタイプを自動で省いてくれる。(例: フシギダネが呼ばれると草タイプと毒タイプを取得するので次のフシギソウのタイプは追加されない。
+                // 結果としてタイプリストの重複を避けることができる
+                self?.pokemons.forEach {
+                    $0.pokemon?.types.forEach { self?.pokemonTypes.insert($0.type.name) }
                 }
 
                 DispatchQueue.main.async {
