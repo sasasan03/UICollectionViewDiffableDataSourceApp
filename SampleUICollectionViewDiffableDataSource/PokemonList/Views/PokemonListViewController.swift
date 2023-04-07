@@ -25,6 +25,7 @@ final class PokemonListViewController: UIViewController {
 
     // Cellのレイアウトを構築
     private func setUpCollectionView() {
+        collectionView.delegate = self
         configureHierarchy()
     }
 }
@@ -63,6 +64,15 @@ extension PokemonListViewController: PokemonListPresenterOutput {
     }
 }
 
+// Cellタップ時に実行
+extension PokemonListViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        presenter.didTapCell(indexPath: indexPath)
+    }
+    // PokemonTypeCellタップ時に実行する処理
+    // PokemonCellタップ時に実行する処理
+}
+
 
 extension PokemonListViewController {
     private func configureHierarchy() {
@@ -82,31 +92,58 @@ extension PokemonListViewController {
             // Sectionごとの列数を代入
             let columns = sectionKind.columnCount
 
-            // Itemのサイズを設定
-            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                                 heightDimension: .fractionalHeight(1.0))
+            let section: NSCollectionLayoutSection
 
-            // Itemを生成
-            let item = NSCollectionLayoutItem(layoutSize: itemSize)
-            // Itemの上下左右間隔を指定
-            item.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
-            // 列が1だった場合、CollectionViewの幅の20％の数値を返し、それ以外はCollectionViewの高さ40%の値を返す
-            let groupHeight = columns == 1 ? NSCollectionLayoutDimension.fractionalWidth(0.2) : NSCollectionLayoutDimension.fractionalHeight(0.4)
-            // 列が1だった場合、CollectionViewの幅の20％の数値を返し、それ以外はCollectionViewの幅の値を返す
-            let groupWidth = columns == 1 ? NSCollectionLayoutDimension.fractionalWidth(0.2) : NSCollectionLayoutDimension.fractionalWidth(1.0)
-            // Groupのサイズを設定
-            let groupSize = NSCollectionLayoutSize(widthDimension: groupWidth,
-                                                   heightDimension: groupHeight)
-            // Groupを生成
-            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: columns)
+            switch sectionKind {
+            case .pokemonTypeList:
+                // Itemのサイズを定義
+                let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
+                // Itemを生成
+                let item = NSCollectionLayoutItem(layoutSize: itemSize)
+                // Itemの上下左右間隔を指定
+                item.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 5, bottom: 5, trailing: 5)
 
-            // Sectionを生成
-            let section = NSCollectionLayoutSection(group: group)
+                // Groupのサイズを定義
+                let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.25), heightDimension: .fractionalWidth(0.2))
+                // Groupを生成
+                let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
+                                                               repeatingSubitem: item,
+                                                               count: columns)
+                // Sectionを生成
+                section = NSCollectionLayoutSection(group: group)
+                // Section間のスペース
+                section.interGroupSpacing = 10
+                // Scroll方向を指定
+                // 🍎この書き方ならswitchで書き分けると若干冗長かも？
+                section.orthogonalScrollingBehavior = sectionKind.orthgonalScrollingBehavior
+                // Sectionの上下左右間隔を指定
+                section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
+            case .pokemonList:
+                // Itemのサイズを設定
+                let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.5),
+                                                     heightDimension: .fractionalHeight(1.0))
+                // Itemを生成
+                let item = NSCollectionLayoutItem(layoutSize: itemSize)
+                // Itemの上下左右間隔を指定
+                item.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
 
-            // Sectionの上下左右間隔を指定
-            section.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
-            // Sectionごとにスクロール方向を設定
-            section.orthogonalScrollingBehavior = sectionKind.orthgonalScrollingBehavior
+                let groupHeight = NSCollectionLayoutDimension.fractionalHeight(0.4)
+                // CollectionViewのWidthの50%を指定
+                let groupWidth = NSCollectionLayoutDimension.fractionalWidth(1)
+                // Groupのサイズを設定
+                let groupSize = NSCollectionLayoutSize(widthDimension: groupWidth,
+                                                       heightDimension: groupHeight)
+                // Groupを生成
+                let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,
+                                                               repeatingSubitem: item,
+                                                               count: columns)
+                // Sectionを生成
+                section = NSCollectionLayoutSection(group: group)
+                // Scroll方向を指定
+                section.orthogonalScrollingBehavior = sectionKind.orthgonalScrollingBehavior
+                // Sectionの上下左右間隔を指定
+                section.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
+            }
             return section
         }
         return layout
