@@ -67,6 +67,7 @@ extension PokemonListViewController: PokemonListPresenterOutput {
 // Cellタップ時に実行
 extension PokemonListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        presenter.didTapCell(indexPath: indexPath)
     }
     // PokemonTypeCellタップ時に実行する処理
     // PokemonCellタップ時に実行する処理

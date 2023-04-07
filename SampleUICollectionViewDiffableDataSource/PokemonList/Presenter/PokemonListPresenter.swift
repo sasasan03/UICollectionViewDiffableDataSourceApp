@@ -14,8 +14,7 @@ protocol PokemonListPresenterInput {
     func viewDidLoad(collectionView: UICollectionView)
     func didTapRestartURLSessionButton()
     func didTapAlertCancelButton()
-//    func didTapTypeOfPokemonCell()
-//    func didTapPokemonCell()
+    func didTapCell(indexPath: IndexPath)
 }
 
 // ViewからPresenterに処理を依頼する際の処理
@@ -120,6 +119,13 @@ final class PokemonListPresenter: PokemonListPresenterInput {
         dataSource.apply(pokemonListSnapshot, to: .pokemonList, animatingDifferences: true)
     }
 
+    // 新たなsnapshotをDataSourceにapplyしてデータ更新
+    private func applySnapshot(items: [Item], section: Section) {
+        var snapshot = NSDiffableDataSourceSectionSnapshot<Item>()
+        snapshot.append(items)
+        dataSource.apply(snapshot, to: section, animatingDifferences: true)
+    }
+
     // アプリ起動時にviewから通知
     func viewDidLoad(collectionView: UICollectionView) {
         view.startIndicator()
@@ -195,15 +201,34 @@ final class PokemonListPresenter: PokemonListPresenterInput {
         })
     }
 
+    func didTapCell(indexPath: IndexPath) {
+        // Sectionを取得
+        guard let sectionKind = Section(rawValue: indexPath.section) else { fatalError("unexpectedError") }
+        // Sectionごとに実行する処理を切り分け
+        switch sectionKind {
+        case .pokemonTypeList:
+            // タップしたポケモンのタイプを取得
+            guard let pokemonTypeListItem = dataSource.itemIdentifier(for: indexPath) else { fatalError("unexpectedError") }
+            guard let pokemonType = pokemonTypeListItem.pokemonType else { fatalError("unexpectedError") }
+
+            // 取得したタイプに該当するポケモンのみを要素とした配列を返す
+            let filteredPokemons = pokemons.filter {
+                guard let pokemon = $0.pokemon else { fatalError("unexpectedError") }
+                return pokemon.types.contains {
+                    // "all"Cellをタップ時は無条件に配列の要素として追加する
+                    if pokemonType == pokemonTypeItems[0].pokemonType { return true }
+                    return $0.type.name.contains(pokemonType)
+                }
+            }
+            // DataSrourceを更新
+            applySnapshot(items: filteredPokemons, section: .pokemonList)
+        case .pokemonList:
+            // 後に処理を追加
+            break
+        }
+    }
+
     func didTapAlertCancelButton() {
         view.updateView()
     }
-
-    //    func didTapTypeOfPokemonCell() {
-//        <#code#>
-//    }
-//
-//    func didTapPokemonCell() {
-//        <#code#>
-//    }
 }
