@@ -7,13 +7,12 @@
 
 import UIKit
 
-final class PokemonListDetailsViewController: UIViewController {
+final class PokemonDetailsViewController: UIViewController {
     @IBOutlet private weak var iconView: UIImageView!
     @IBOutlet private weak var nameLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        // presenterにviewDidLoadを定義してここで呼びだす？
     }
 }
