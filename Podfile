@@ -6,7 +6,7 @@ target 'SampleUICollectionViewDiffableDataSource' do
   use_frameworks!
 
   # Pods for SampleUICollectionViewDiffableDataSource
-  pod 'Kingfisher', '~> 7.0'
+  pod 'Kingfisher', '~> 7.6'
   pod 'SwiftLint'
   
 
