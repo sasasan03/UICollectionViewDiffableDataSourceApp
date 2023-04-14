@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="JbI-DQ-15E">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="JbI-DQ-15E">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Pokemon List View Controller-->
+        <!--PokemonList-->
         <scene sceneID="s0d-6b-0kx">
             <objects>
                 <viewController id="Y6W-OH-hqX" customClass="PokemonListViewController" customModule="SampleUICollectionViewDiffableDataSource" customModuleProvider="target" sceneMemberID="viewController">
@@ -41,7 +42,7 @@
                             <constraint firstItem="lqL-TK-4xY" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="qfx-Lk-QMd"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="Dyd-gb-FVZ"/>
+                    <navigationItem key="navigationItem" title="PokemonList" id="Dyd-gb-FVZ"/>
                     <connections>
                         <outlet property="collectionView" destination="lqL-TK-4xY" id="GZD-hG-cPV"/>
                         <outlet property="indicator" destination="8WF-MP-gGz" id="XsA-2M-BfK"/>
