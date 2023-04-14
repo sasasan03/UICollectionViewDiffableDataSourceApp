@@ -8,9 +8,8 @@
 import Foundation
 import UIKit
 
-// ViewからPresenterに処理を依頼する際の処理
+// ViewからPresenterに処理を依頼する際に呼ばれるメソッド
 protocol PokemonListPresenterInput {
-//    var numberOfPokemons: Int { get }
     func viewDidLoad(collectionView: UICollectionView)
     func didTapRestartURLSessionButton()
     func didTapAlertCancelButton()
@@ -22,6 +21,7 @@ protocol PokemonListPresenterOutput: AnyObject {
     func startIndicator()
     func updateView()
     func showAlertMessage(errorMessage: String)
+    func showPokemonDetailsVC(pokemon: Pokemon)
 }
 
 // データソースに追加するSection
@@ -42,6 +42,7 @@ enum Section: Int, CaseIterable {
 final class PokemonListPresenter: PokemonListPresenterInput {
     // ハードコーディング対策
     static let storyboardName = "PokemonList"
+    static let identifier = "PokemonList"
     
     // 通信で取得してパースしたデータを格納する配列
     private var pokemons: [Item] = []
@@ -150,7 +151,6 @@ final class PokemonListPresenter: PokemonListPresenterInput {
                 self?.pokemons.forEach {
                     $0.pokemon?.types.forEach { self?.pokemonTypes.insert($0.type.name) }
                 }
-
                 DispatchQueue.main.async {
                     self?.applyInitialSnapshots()
                     self?.view.updateView()
@@ -187,7 +187,6 @@ final class PokemonListPresenter: PokemonListPresenterInput {
                 self?.pokemons.forEach {
                     $0.pokemon?.types.forEach { self?.pokemonTypes.insert($0.type.name) }
                 }
-
                 DispatchQueue.main.async {
                     self?.view.updateView()
                 }
@@ -223,11 +222,17 @@ final class PokemonListPresenter: PokemonListPresenterInput {
             // DataSrourceを更新
             applySnapshot(items: filteredPokemons, section: .pokemonList)
         case .pokemonList:
-            // 後に処理を追加
-            break
+            // タップしたポケモンを取得
+            guard let item = dataSource.itemIdentifier(for: indexPath) else { fatalError("unexpectedError") }
+            guard let pokemon = item.pokemon else { fatalError("unexpectedError") }
+
+            // 以下はViewの描画処理にあたる為、本ファイルではなくDelegateで通知してViewに直接書き込むやり方が適切であると言える。
+            view.showPokemonDetailsVC(pokemon: pokemon)
+//            let detailViewController = UIStoryboard(name: PokemonDetailViewController.storyboardName, bundle: nil).instantiateViewController(withIdentifier: PokemonDetailViewController.idenfitifier) as! PokemonDetailViewController
+//            detailViewController.pokemon = pokemon
+//            navigationController?.pushViewController(detailViewController, animated: true)
         }
     }
-
     func didTapAlertCancelButton() {
         view.updateView()
     }
