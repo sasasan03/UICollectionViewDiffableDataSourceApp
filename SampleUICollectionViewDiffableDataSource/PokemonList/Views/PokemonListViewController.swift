@@ -20,11 +20,7 @@ final class PokemonListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpCollectionView()
-        presenter = PokemonListPresenter(view: self, model: API())
-        self.inject(presenter: presenter)
         presenter.viewDidLoad(collectionView: collectionView)
-        //        let pokemonListPresenter = PokemonListPresenter(view: pokemonListVC, model: model)
-        //        pokemonListVC.inject(presenter: pokemonListPresenter)
     }
 
     // Cellのレイアウトを構築
@@ -38,15 +34,6 @@ extension PokemonListViewController: PokemonListPresenterOutput {
     func showPokemonDetailsVC(pokemon: Pokemon) {
         // 遷移先のポケモンの詳細画面を生成
         let pokemonDetailsVC = UIStoryboard(name: PokemonDetailsPresenter.storyboardName, bundle: nil).instantiateViewController(withIdentifier: PokemonDetailsPresenter.idenfitifier) as! PokemonDetailsViewController
-        let presenter = PokemonDetailsPresenter(view: pokemonDetailsVC)
-        pokemonDetailsVC.inject(presenter: presenter)
-        presenter.pokemon = pokemon
-        // 🍎どのタイミングでItemのデータを遷移先のViewに渡すべきなのか。
-        // 遷移先のViewControllerクラスにpokemon型のデータは設計上持たせるべきではない。
-        // だからといってviewDidLoadをここで呼び出すのも間違っている。遷移後にライフサイクルで呼び出すべきものであるから。
-        
-        //        detailViewController.pokemon = pokemon
-        // 🍎NavigationControllerがnilになってる？
         navigationController?.pushViewController(pokemonDetailsVC, animated: true)
     }
 
