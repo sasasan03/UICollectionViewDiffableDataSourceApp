@@ -34,12 +34,18 @@ extension PokemonListViewController: PokemonListPresenterOutput {
     func showPokemonDetailsVC(pokemon: Pokemon) {
         // 遷移先のポケモンの詳細画面を生成
         let pokemonDetailsVC = UIStoryboard(name: PokemonDetailsPresenter.storyboardName, bundle: nil).instantiateViewController(withIdentifier: PokemonDetailsPresenter.idenfitifier) as! PokemonDetailsViewController
+
+        // 🍎本来MVPアーキテクチャにおける"View"は描画処理に集中すべきなのでここに書くことが最適ではないはず、後に学習して修正
+        // 遷移先の画面のPresenterのインスタンスを生成
+        let pokemonDetailsPresenter = PokemonDetailsPresenter(view: pokemonDetailsVC)
+        // 遷移先の画面で暗黙的アンラップで定義しているpresenterプロパティに生成したPresenterインスタンスを指定
+        pokemonDetailsVC.inject(presenter: pokemonDetailsPresenter)
+        // 引数の値をpresenterのインスタンスメンバーに渡す
+        pokemonDetailsVC.presenter.pokemon = pokemon
+
+        // 画面遷移
         navigationController?.pushViewController(pokemonDetailsVC, animated: true)
     }
-
-//    func updatePokemonTypeCellColor(item: Item) {
-//        <#code#>
-//    }
 
     // インジケータを起動させる
     func startIndicator() {
