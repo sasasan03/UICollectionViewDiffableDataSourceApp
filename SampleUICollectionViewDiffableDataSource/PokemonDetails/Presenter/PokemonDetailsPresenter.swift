@@ -10,6 +10,7 @@ import Foundation
 // ViewからPresenterに処理を依頼する際の処理
 protocol PokemonDetailsPresenterInput {
     func viewDidLoad()
+    var pokemon: Pokemon? { get set }
 }
 
 // PresenterからViewに処理を依頼する際の処理

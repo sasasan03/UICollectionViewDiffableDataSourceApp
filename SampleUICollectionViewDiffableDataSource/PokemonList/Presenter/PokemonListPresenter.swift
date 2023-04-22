@@ -53,7 +53,7 @@ final class PokemonListPresenter: PokemonListPresenterInput {
     private lazy var pokemonTypeItems = pokemonTypes.map { Item(pokemonType: $0) }
     // PokemonTypeListの最初に置き、タップすると全タイプのポケモンを表示させる
     private let allTypes = "all"
-
+    // PresenterはViewを弱参照で持つ。
     private weak var view: PokemonListPresenterOutput!
     private var model: APIInput
 

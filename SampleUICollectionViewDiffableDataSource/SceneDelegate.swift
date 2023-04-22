@@ -18,16 +18,26 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
 
+        // 起動画面のStoryboardのインスタンスを生成
         let navigationController = UIStoryboard(name: PokemonListPresenter.storyboardName, bundle: nil).instantiateInitialViewController() as! UINavigationController
-
         let pokemonListVC = navigationController.viewControllers[0] as! PokemonListViewController
-        
-        let model = API()
-        // PreseneterはViewのインスタンスを要求する為、Controllerのクラスファイルでselfを渡すわけにはいかず、SceneDelegateで処理を記述する必要がある。
-        let presenter = PokemonListPresenter(view: pokemonListVC, model: model)
-        pokemonListVC.inject(presenter: presenter)
 
-        window?.rootViewController = pokemonListVC
+        // 起動画面のModel,Presenterのインスタンスを生成
+        let model = API()
+        let pokemonListPresenter = PokemonListPresenter(view: pokemonListVC, model: model)
+        // 生成したPresenterを起動画面にセット
+        pokemonListVC.inject(presenter: pokemonListPresenter)
+
+        // 🍎起動画面の遷移先の画面のPresenterの初期化処理を記述する箇所の候補
+        // ポケモンの詳細画面のStoryboardのインスタンスを生成
+           // 🍎生成したインスタンスを起動画面にも共有する方法を考える必要がある。シングルトンパターンか？
+//        let pokemonDetailsVC = UIStoryboard(name: PokemonDetailsPresenter.storyboardName, bundle: nil).instantiateViewController(withIdentifier: PokemonDetailsPresenter.idenfitifier) as! PokemonDetailsViewController
+        // ポケモンの詳細画面のPresenterのインスタンスを生成
+//        let pokemonDetailsPresenter = PokemonDetailsPresenter(view: pokemonDetailsVC)
+        // 生成したPresenterをポケモンの詳細画面にセット
+//        pokemonDetailsVC.inject(presenter: pokemonDetailsPresenter)
+
+        window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
     }
 
