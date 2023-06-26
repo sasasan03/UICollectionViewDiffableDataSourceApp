@@ -8,7 +8,7 @@
 import Foundation
 
 struct MockAPI: APIInput {
-    var urlError: URLError?
+    var httpError: HTTPError?
     var apiError: APIError?
 
     // ダミーデータを定義
@@ -19,7 +19,7 @@ struct MockAPI: APIInput {
 //    let pikachu = sampleData.pikachu
 
     func decodePokemonData(completion: @escaping (Result<[Pokemon], Error>) -> Void) {
-        if let urlError { completion(.failure(urlError)) }
+        if let httpError { completion(.failure(httpError)) }
         if let apiError { completion(.failure(apiError)) }
         // ここに渡すデータが固定ではなく、変動して欲しい
         completion(.success(mockPokemonData ?? []))
