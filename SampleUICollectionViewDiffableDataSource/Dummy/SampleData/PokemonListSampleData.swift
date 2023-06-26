@@ -8,9 +8,6 @@
 import Foundation
 
 struct PokemonListSampleData {
-    // 空のデータ
-    let emptyArray: [Pokemon] = []
-
     // ピカチューのデータ
     let pikachu = [
         Pokemon(
