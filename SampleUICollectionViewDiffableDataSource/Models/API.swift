@@ -9,26 +9,26 @@ import Foundation
 
 
 protocol APIInput {
-    func asyncFetchPokemonData() async -> [Pokemon]
+//    func asyncFetchPokemonData() async -> [Pokemon]
     func decodePokemonData(completion: @escaping (Result<[Pokemon], Error>) -> Void)
 }
 
 
 final class API: APIInput {
 //    呼び出し時にネスト地獄を避けるためにasync-awaitに対応させる処理を定義
-    func asyncFetchPokemonData() async -> [Pokemon] {
-        return await withCheckedContinuation { continuation in
-            decodePokemonData { result in
-                switch result {
-                case .success(let pokemons):
-                    continuation.resume(returning: pokemons)
-                case .failure(let error):
-                    // 🍎Neverって何。
-                    continuation.resume(throwing: error as! Never)
-                }
-            }
-        }
-    }
+//    func asyncFetchPokemonData() async -> [Pokemon] {
+//        return await withCheckedContinuation { continuation in
+//            decodePokemonData { result in
+//                switch result {
+//                case .success(let pokemons):
+//                    continuation.resume(returning: pokemons)
+//                case .failure(let error):
+//                    // 🍎Neverって何。
+//                    continuation.resume(throwing: error as! Never)
+//                }
+//            }
+//        }
+//    }
     
     // 通信によって取得したデータをパース
     // 取得したポケモンのデータをSwiftの型として扱う為にデコード
