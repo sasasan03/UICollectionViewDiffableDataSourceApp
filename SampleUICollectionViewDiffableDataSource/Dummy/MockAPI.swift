@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct MockAPIInput: APIInput {
+struct MockAPI: APIInput {
     func asyncFetchPokemonData() async -> [Pokemon] {
         []
     }

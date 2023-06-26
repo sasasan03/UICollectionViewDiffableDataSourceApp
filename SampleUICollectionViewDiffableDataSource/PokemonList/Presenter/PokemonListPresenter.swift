@@ -66,6 +66,7 @@ final class PokemonListPresenter: PokemonListPresenterInput {
     private var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
 
     // データソースを構築
+    // 直接CollectionViewを渡せる形にしてるからテストが書けない.
     private func configureDataSource(collectionView: UICollectionView) {
         // pokemonTypeCellの登録
         // 🍏UINibクラス型の引数『cellNib』にPokemonTypeCellクラスで定義したUINibクラス※1を指定
@@ -134,6 +135,7 @@ final class PokemonListPresenter: PokemonListPresenterInput {
         model.decodePokemonData(completion: { [weak self] result in
             switch result {
             case .success(let pokemonsData):
+                print("ピカチューのデータ", pokemonsData[25])
                 // 順次要素を追加
                 pokemonsData.forEach {
                     self?.pokemons.append(Item(pokemon: $0))
