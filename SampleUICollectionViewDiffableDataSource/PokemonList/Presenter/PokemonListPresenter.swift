@@ -55,7 +55,7 @@ final class PokemonListPresenter: PokemonListPresenterInput {
     private let allTypes = "all"
     // PresenterはViewを弱参照で持つ。
     private weak var view: PokemonListPresenterOutput!
-    private var model: APIInput
+    var model: APIInput
 
     init(view: PokemonListPresenterOutput, model: APIInput) {
         self.view = view
