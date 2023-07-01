@@ -17,16 +17,20 @@ final class PokemonListViewController: UIViewController {
         self.presenter = presenter
     }
 
+    // データソースを定義
+    private var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpCollectionView()
-        presenter.viewDidLoad(collectionView: collectionView)
+        presenter.viewDidLoad()
     }
 
     // Cellのレイアウトを構築
     private func setUpCollectionView() {
         collectionView.delegate = self
         configureHierarchy()
+        configureDataSource()
     }
 }
 
@@ -56,11 +60,22 @@ extension PokemonListViewController: PokemonListPresenterOutput {
 
     // Viewを更新
     func updateView() {
+        // しかしDiffableDaraSorceを使えばリロード処理は不要だった気がする
+        collectionView.reloadData()
+    }
+
+    func updateView(pokemonTypeItems: [Item], pokemons: [Item]) {
         indicator.stopAnimating()
         indicator.isHidden = true
         view.alpha = 1.0
-        // しかしDiffableDaraSorceを使えばリロード処理は不要だった気がする
+        // データソース登録
+        applyInitialSnapshots(pokemonTypeItems: pokemonTypeItems, pokemons: pokemons)
+        // collectionView更新(DiffableDataSourceは不要かも？)
         collectionView.reloadData()
+    }
+
+    func updateDataSoure(pokemons: [Item]) {
+        applySnapshot(items: pokemons, section: .pokemonList)
     }
 
     // 通信失敗時にアラートを表示する
@@ -79,7 +94,21 @@ extension PokemonListViewController: PokemonListPresenterOutput {
 // Cellタップ時に実行
 extension PokemonListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        presenter.didTapCell(indexPath: indexPath)
+        // Sectionを取得
+        guard let sectionKind = Section(rawValue: indexPath.section) else { fatalError("unexpectedError") }
+
+        switch sectionKind {
+        case .pokemonTypeList:
+            // タップしたポケモンのタイプを取得
+            guard let pokemonTypeListItem = dataSource.itemIdentifier(for: indexPath) else { fatalError("unexpectedError") }
+            guard let pokemonType = pokemonTypeListItem.pokemonType else { fatalError("unexpectedError") }
+            presenter.didTapPokemonTypeCell(pokemonType: pokemonType)
+        case .pokemonList:
+            // タップしたポケモンを取得
+            guard let item = dataSource.itemIdentifier(for: indexPath) else { fatalError("unexpectedError") }
+            guard let pokemon = item.pokemon else { fatalError("unexpectedError") }
+            presenter.didTapPokemonCell(pokemon: pokemon)
+        }
     }
 }
 
@@ -91,6 +120,41 @@ extension PokemonListViewController {
         // XIBファイルCellをCollectionViewに登録
         collectionView.register(PokemonCell.nib, forCellWithReuseIdentifier: PokemonCell.identifier)
         collectionView.register(PokemonTypeCell.nib, forCellWithReuseIdentifier: PokemonTypeCell.identifier)
+    }
+
+    // データソースを構築
+    // 直接CollectionViewを渡せる形にしてるからテストが書けない.
+    private func configureDataSource() {
+        // pokemonTypeCellの登録
+        // 🍏UINibクラス型の引数『cellNib』にPokemonTypeCellクラスで定義したUINibクラス※1を指定
+        // ※1: static let nib = UINib(nibName: String(describing: PokemonTypeCell.self), bundle: nil)
+        let pokemonTypeCellRegistration = UICollectionView.CellRegistration<PokemonTypeCell, Item>(cellNib: PokemonTypeCell.nib) { cell, _, item in
+            cell.layer.cornerRadius = 15
+            cell.configure(type: item.pokemonType)
+        }
+
+        // pokemonCellの登録
+        let pokemonCellRegistration = UICollectionView.CellRegistration<PokemonCell, Item>(cellNib: PokemonCell.nib) { cell, _, item in
+            // Cellの構築処理
+            cell.configure(imageURL: item.pokemon?.sprites.frontImage, name: item.pokemon?.name)
+        }
+
+        // data sourceの構築
+        dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView) { collectionView, indexPath, item -> UICollectionViewCell? in
+            guard let section = Section(rawValue: indexPath.section) else { fatalError("Unknown section") }
+            switch section {
+            case .pokemonTypeList:
+                return collectionView.dequeueConfiguredReusableCell(using: pokemonTypeCellRegistration,
+                                                                    for: indexPath,
+                                                                    item: item
+                )
+            case .pokemonList:
+                return collectionView.dequeueConfiguredReusableCell(using: pokemonCellRegistration,
+                                                                    for: indexPath,
+                                                                    item: item
+                )
+            }
+        }
     }
 }
 
@@ -157,6 +221,36 @@ extension PokemonListViewController {
             return section
         }
         return layout
+    }
+}
+
+extension PokemonListViewController {
+    /// 画面起動時にDataSourceにデータを登録
+    private func applyInitialSnapshots(pokemonTypeItems: [Item], pokemons: [Item]) {
+        print("pokemonTypeItems:", pokemonTypeItems)
+        print("pokemons:", pokemons)
+        // データをViewに反映させる為のDiffableDataSourceSnapshotクラスのインスタンスを生成
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+        // snapshotにSectionを追加
+        snapshot.appendSections(Section.allCases)
+        dataSource.apply(snapshot)
+
+        // pokemonTypeListのItemをSnapshotに追加 (orthogonal scroller)
+        var pokemonTypeSnapshot = NSDiffableDataSourceSectionSnapshot<Item>()
+        pokemonTypeSnapshot.append(pokemonTypeItems)
+        dataSource.apply(pokemonTypeSnapshot, to: .pokemonTypeList, animatingDifferences: true)
+
+        // pokemonListのItemをSnapshotに追加
+        var pokemonListSnapshot = NSDiffableDataSourceSectionSnapshot<Item>()
+        pokemonListSnapshot.append(pokemons)
+        dataSource.apply(pokemonListSnapshot, to: .pokemonList, animatingDifferences: true)
+    }
+
+    /// 新たなsnapshotをDataSourceにapplyしてデータ更新
+    private func applySnapshot(items: [Item], section: Section) {
+        var snapshot = NSDiffableDataSourceSectionSnapshot<Item>()
+        snapshot.append(items)
+        dataSource.apply(snapshot, to: section, animatingDifferences: true)
     }
 }
 
