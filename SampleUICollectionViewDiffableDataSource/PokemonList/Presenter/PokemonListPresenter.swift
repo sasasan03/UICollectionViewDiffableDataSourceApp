@@ -62,6 +62,10 @@ final class PokemonListPresenter: PokemonListPresenterInput {
         self.model = model
     }
 
+    deinit {
+        print(String(describing: PokemonListPresenter.self) + " " + "is deinitialized.")
+    }
+
     // アプリ起動時にviewから通知
     func viewDidLoad() {
         view.startIndicator()
