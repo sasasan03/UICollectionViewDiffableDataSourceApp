@@ -68,6 +68,7 @@ final class PokemonListPresenter: PokemonListPresenterInput {
         model.decodePokemonData(completion: { [weak self] result in
             switch result {
             case .success(let pokemonsData):
+                print("pokemonsData", pokemonsData)
                 DispatchQueue.main.async {
                     // 順次要素を追加
                     pokemonsData.forEach {
@@ -84,11 +85,15 @@ final class PokemonListPresenter: PokemonListPresenterInput {
                     self?.pokemons.forEach {
                         $0.pokemon?.types.forEach { self?.pokemonTypes.insert($0.type.name) }
                     }
-
-
                     // pokemonTypeItemsはlazyプロパティなので初期値が決まる
                     // 全タイプ対象のItemを追加
                     self?.pokemonTypeItems.insert(Item(pokemonType: "all"), at: 0)
+
+                    // TODO: テスト時、なぜnilなのか調査
+                    // インスタンスが解放されてる説？
+                    print("self?.pokemons", self?.pokemons)
+                    print("self?.pokemonTypeItems", self?.pokemonTypeItems)
+
                     guard let pokemonTypeItems = self?.pokemonTypeItems else { fatalError("unexpectedError") }
                     guard let pokemons = self?.pokemons else { fatalError("unexpectedError") }
 
