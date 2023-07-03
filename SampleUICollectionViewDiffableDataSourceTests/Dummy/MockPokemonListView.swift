@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import XCTest
 @testable import SampleUICollectionViewDiffableDataSource
 
 class MockPokemonListView {
@@ -14,6 +15,12 @@ class MockPokemonListView {
 
     var count = 0
     var updateViewHistory: [[Pokemon]] = []
+
+    private var expectation: XCTestExpectation
+
+    init(expectationForUpdateView: XCTestExpectation) {
+        self.expectation = expectationForUpdateView
+    }
 }
 
 extension MockPokemonListView: PokemonListPresenterOutput {
