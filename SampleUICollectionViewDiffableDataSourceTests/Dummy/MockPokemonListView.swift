@@ -6,15 +6,17 @@
 //
 
 import Foundation
+@testable import SampleUICollectionViewDiffableDataSource
 
-class MockPokemonListView: PokemonListPresenterOutput {
+class MockPokemonListView {
     func updateDataSoure(pokemons: [Item]) {
     }
 
     var count = 0
     var updateViewHistory: [[Pokemon]] = []
+}
 
-
+extension MockPokemonListView: PokemonListPresenterOutput {
     func startIndicator() {
         print("Indicatorをスタート")
     }
