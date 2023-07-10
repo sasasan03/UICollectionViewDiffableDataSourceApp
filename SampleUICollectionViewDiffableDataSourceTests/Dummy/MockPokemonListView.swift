@@ -10,7 +10,7 @@ import XCTest
 @testable import SampleUICollectionViewDiffableDataSource
 
 class MockPokemonListView {
-    func updateDataSoure(pokemons: [Item]) {
+    func updateDataSoure(pokemons: [ListItem]) {
     }
 
     var count = 0
@@ -28,7 +28,7 @@ extension MockPokemonListView: PokemonListPresenterOutput {
         print("Indicatorをスタート")
     }
 
-    func updateView(pokemonTypeItems: [Item], pokemons: [Item]) {
+    func updateView(pokemonTypeItems: [ListItem], pokemons: [ListItem]) {
         print("pokemonTypeItems", pokemonTypeItems)
         print("pokemons", pokemons)
     }
