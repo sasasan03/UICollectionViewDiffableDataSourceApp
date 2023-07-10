@@ -20,8 +20,8 @@ protocol PokemonListPresenterInput {
 // ViewからPresenterに処理を依頼する際の処理
 protocol PokemonListPresenterOutput: AnyObject {
     func startIndicator()
-    func updateView(pokemonTypeItems: [Item], pokemons: [Item])
-    func updateDataSoure(pokemons: [Item])
+    func updateView(pokemonTypeItems: [ListItem], pokemons: [ListItem])
+    func updateDataSoure(pokemons: [ListItem])
     func showAlertMessage(errorMessage: String)
     func showPokemonDetailsVC(pokemon: Pokemon)
 }
@@ -47,12 +47,12 @@ final class PokemonListPresenter: PokemonListPresenterInput {
     static let identifier = "PokemonList"
     
     // 通信で取得してパースしたデータを格納する配列
-    private var pokemons: [Item] = []
+    private var pokemons: [ListItem] = []
     // ポケモンのタイプをまとめるSet
     private var pokemonTypes = Set<String>()
     // CellのLabel&Snapshotに渡すデータの配列
     // PokemonTypeListのSetの要素をItemインスタンスの初期値に指定し、mapで配列にして返す
-    private lazy var pokemonTypeItems = pokemonTypes.map { Item(pokemonType: $0) }
+    private lazy var pokemonTypeItems = pokemonTypes.map { ListItem.pokemonType($0) }
     // PresenterはViewを弱参照で持つ。
     private weak var view: PokemonListPresenterOutput!
     var model: APIInput
@@ -76,9 +76,12 @@ final class PokemonListPresenter: PokemonListPresenterInput {
                 DispatchQueue.main.async {
                     // 順次要素を追加
                     pokemonsData.forEach {
-                        self?.pokemons.append(Item(pokemon: $0))
+                        self?.pokemons.append(ListItem.pokemon($0))
+                        print("pokemonsの中身：", self?.pokemons)
+//                        self?.pokemons.append(Item(pokemon: $0))
                     }
                     // ポケモン図鑑No.の昇順になるよう並び替え
+                    // TODO: 要素がenumのケースだった場合の実装方法が分からない
                     self?.pokemons.sort {
                         guard let pokedexNumber = $0.pokemon else { fatalError("unexpectedError") }
                         guard let anotherPokedexNumber = $1.pokemon else { fatalError("unexpectedError") }
@@ -91,12 +94,8 @@ final class PokemonListPresenter: PokemonListPresenterInput {
                     }
                     // pokemonTypeItemsはlazyプロパティなので初期値が決まる
                     // 全タイプ対象のItemを追加
-                    self?.pokemonTypeItems.insert(Item(pokemonType: "all"), at: 0)
+                    self?.pokemonTypeItems.insert(ListItem(pokemonType: "all"), at: 0)
 
-                    // TODO: テスト時、なぜnilなのか調査
-                    // インスタンスが解放されてる説？
-                    print("self?.pokemons", self?.pokemons)
-                    print("self?.pokemonTypeItems", self?.pokemonTypeItems)
 
                     guard let pokemonTypeItems = self?.pokemonTypeItems else { fatalError("unexpectedError") }
                     guard let pokemons = self?.pokemons else { fatalError("unexpectedError") }
@@ -122,9 +121,10 @@ final class PokemonListPresenter: PokemonListPresenterInput {
                 DispatchQueue.main.async {
                     // 順次要素を追加
                     pokemonsData.forEach {
-                        self?.pokemons.append(Item(pokemon: $0))
+                        self?.pokemons.append(ListItem.pokemon($0))
                     }
                     // ポケモン図鑑No.の昇順になるよう並び替え
+                    // TODO: 要素がenumのケースだった場合の実装方法が分からない
                     self?.pokemons.sort {
                         guard let pokedexNumber = $0.pokemon else { fatalError("unexpectedError") }
                         guard let anotherPokedexNumber = $1.pokemon else { fatalError("unexpectedError") }
@@ -139,7 +139,7 @@ final class PokemonListPresenter: PokemonListPresenterInput {
 
                     // pokemonTypeItemsはlazyプロパティなので初期値が決まる
                     // 全タイプ対象のItemを追加
-                    self?.pokemonTypeItems.insert(Item(pokemonType: "all"), at: 0)
+                    self?.pokemonTypeItems.insert(ListItem(pokemonType: "all"), at: 0)
                     guard let pokemonTypeItems = self?.pokemonTypeItems else { fatalError("unexpectedError") }
                     guard let pokemons = self?.pokemons else { fatalError("unexpectedError") }
 
@@ -160,6 +160,7 @@ final class PokemonListPresenter: PokemonListPresenterInput {
     func didTapPokemonTypeCell(pokemonType: String) {
         // 取得したタイプに該当するポケモンのみを要素とした配列を返す
         let filteredPokemons = pokemons.filter {
+            // TODO: 要素がenumのケースだった場合の実装方法が分からない
             guard let pokemon = $0.pokemon else { fatalError("unexpectedError") }
             return pokemon.types.contains {
                 // "all"Cellをタップ時は無条件に配列の要素として追加する
