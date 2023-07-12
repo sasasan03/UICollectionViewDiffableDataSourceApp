@@ -234,11 +234,14 @@ extension PokemonListViewController {
 
 extension PokemonListViewController {
     /// 画面起動時にDataSourceにデータを登録
-    private func applyInitialSnapshots(pokemonTypeNames: [String], pokemons: [Pokemon] {
-        print("pokemonTypeItems:", pokemonTypeItems)
-        print("pokemons:", pokemons)
+    private func applyInitialSnapshots(pokemonTypeNames: [String], pokemons: [Pokemon]) {
         // データをViewに反映させる為のDiffableDataSourceSnapshotクラスのインスタンスを生成
         var snapshot = NSDiffableDataSourceSnapshot<Section, ListItem>()
+
+        // ポケモンとポケモンタイプリストをListItem型に変換した配列を生成
+        let pokemonItems = pokemons.map { ListItem.pokemon($0) }
+        let pokemonTypeItems = pokemonTypeNames.map { ListItem.pokemonType($0) }
+
         // snapshotにSectionを追加
         snapshot.appendSections(Section.allCases)
         dataSource.apply(snapshot)
@@ -250,14 +253,17 @@ extension PokemonListViewController {
 
         // pokemonListのItemをSnapshotに追加
         var pokemonListSnapshot = NSDiffableDataSourceSectionSnapshot<ListItem>()
-        pokemonListSnapshot.append(pokemons)
+        pokemonListSnapshot.append(pokemonItems)
         dataSource.apply(pokemonListSnapshot, to: .pokemonList, animatingDifferences: true)
     }
 
     /// 新たなsnapshotをDataSourceにapplyしてデータ更新
     private func applySnapshot(pokemons: [Pokemon], section: Section) {
         var snapshot = NSDiffableDataSourceSectionSnapshot<ListItem>()
-        snapshot.append(pokemons)
+        // ポケモンリストをListItem型に変換した配列を生成
+        let pokemonItems = pokemons.map { ListItem.pokemon($0) }
+
+        snapshot.append(pokemonItems)
         dataSource.apply(snapshot, to: section, animatingDifferences: true)
     }
 }
