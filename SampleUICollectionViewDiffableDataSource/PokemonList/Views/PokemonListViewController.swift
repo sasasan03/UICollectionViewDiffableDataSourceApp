@@ -8,6 +8,12 @@
 import UIKit
 
 final class PokemonListViewController: UIViewController {
+    /// DiffableDataSourceに渡すItemを管理
+    private enum ListItem: Hashable {
+        case pokemon(Pokemon)
+        case pokemonType(String)
+    }
+
     @IBOutlet private weak var collectionView: UICollectionView!
     @IBOutlet private weak var indicator: UIActivityIndicatorView!
 
