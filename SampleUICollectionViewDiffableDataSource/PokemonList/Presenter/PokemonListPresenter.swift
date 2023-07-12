@@ -52,7 +52,8 @@ final class PokemonListPresenter {
     private var pokemonTypes = Set<String>()
     // CellのLabel&Snapshotに渡すデータの配列
     // PokemonTypeListのSetの要素をItemインスタンスの初期値に指定し、mapで配列にして返す
-    private lazy var pokemonTypeNames = pokemonTypes.map { $0 }
+    // TODO: これだとアクセスする度にallが追加される可能性がある為、要確認
+    private var pokemonTypeNames: [String] { ["all"] + pokemonTypes }
     // PresenterはViewを弱参照で持つ。
     private weak var view: PokemonListPresenterOutput!
     var model: APIInput
@@ -80,18 +81,12 @@ final class PokemonListPresenter {
 //                        self?.pokemons.append(Item(pokemon: $0))
                     }
                     // ポケモン図鑑No.の昇順になるよう並び替え
-                    // TODO: 要素がenumのケースだった場合の実装方法が分からない
                     self?.pokemons.sort { $0.id < $1.id }
                     // Setは要素を一意にする為、一度追加されたタイプを自動で省いてくれる。(例: フシギダネが呼ばれると草タイプと毒タイプを取得するので次のフシギソウのタイプは追加されない。
                     // 結果としてタイプリストの重複を避けることができる
                     self?.pokemons.forEach {
                         $0.types.forEach { self?.pokemonTypes.insert($0.type.name) }
                     }
-                    // pokemonTypeItemsはlazyプロパティなので初期値が決まる
-                    // 全タイプ対象のItemを追加
-                    self?.pokemonTypeNames.insert("all", at: 0)
-
-
                     guard let pokemonTypeItems = self?.pokemonTypeNames else { fatalError("unexpectedError") }
                     guard let pokemons = self?.pokemons else { fatalError("unexpectedError") }
 
