@@ -129,15 +129,25 @@ extension PokemonListViewController {
         // pokemonTypeCellの登録
         // 🍏UINibクラス型の引数『cellNib』にPokemonTypeCellクラスで定義したUINibクラス※1を指定
         // ※1: static let nib = UINib(nibName: String(describing: PokemonTypeCell.self), bundle: nil)
+
         let pokemonTypeCellRegistration = UICollectionView.CellRegistration<PokemonTypeCell, ListItem>(cellNib: PokemonTypeCell.nib) { cell, _, listItem in
-            cell.layer.cornerRadius = 15
-            cell.configure(type: listItem.pokemonType)
+            switch listItem {
+            case .pokemon:
+                fatalError()
+            case .pokemonType(let typeName):
+                cell.layer.cornerRadius = 15
+                cell.configure(type: typeName)
+            }
         }
 
         // pokemonCellの登録
         let pokemonCellRegistration = UICollectionView.CellRegistration<PokemonCell, ListItem>(cellNib: PokemonCell.nib) { cell, _, listItem in
-            // Cellの構築処理
-            cell.configure(imageURL: item.pokemon?.sprites.frontImage, name: item.pokemon?.name)
+            switch listItem {
+            case .pokemon(let pokemon):
+                cell.configure(imageURL: pokemon.sprites.frontImage, name: pokemon.name)
+            case .pokemonType:
+                fatalError()
+            }
         }
 
         // data sourceの構築
