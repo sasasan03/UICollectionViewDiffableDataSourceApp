@@ -20,8 +20,8 @@ protocol PokemonListPresenterInput {
 // ViewからPresenterに処理を依頼する際の処理
 protocol PokemonListPresenterOutput: AnyObject {
     func startIndicator()
-    func updateView(pokemonTypeItems: [ListItem], pokemons: [ListItem])
-    func updateDataSoure(pokemons: [ListItem])
+    func updateView(pokemonTypeItems: [String], pokemons: [Pokemon])
+    func updateDataSoure(pokemons: [Pokemon])
     func showAlertMessage(errorMessage: String)
     func showPokemonDetailsVC(pokemon: Pokemon)
 }
