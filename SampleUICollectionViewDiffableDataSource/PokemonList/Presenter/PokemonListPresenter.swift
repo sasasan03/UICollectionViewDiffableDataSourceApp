@@ -52,7 +52,7 @@ final class PokemonListPresenter: PokemonListPresenterInput {
     private var pokemonTypes = Set<String>()
     // CellのLabel&Snapshotに渡すデータの配列
     // PokemonTypeListのSetの要素をItemインスタンスの初期値に指定し、mapで配列にして返す
-    private lazy var pokemonTypeItems = pokemonTypes.map { ListItem.pokemonType($0) }
+    private lazy var pokemonTypeNames = pokemonTypes.map { $0 }
     // PresenterはViewを弱参照で持つ。
     private weak var view: PokemonListPresenterOutput!
     var model: APIInput
@@ -82,11 +82,7 @@ final class PokemonListPresenter: PokemonListPresenterInput {
                     }
                     // ポケモン図鑑No.の昇順になるよう並び替え
                     // TODO: 要素がenumのケースだった場合の実装方法が分からない
-                    self?.pokemons.sort {
-                        guard let pokedexNumber = $0 else { fatalError("unexpectedError") }
-                        guard let anotherPokedexNumber = $1 else { fatalError("unexpectedError") }
-                        return pokedexNumber.id < anotherPokedexNumber.id
-                    }
+                    self?.pokemons.sort { $0.id < $1.id }
                     // Setは要素を一意にする為、一度追加されたタイプを自動で省いてくれる。(例: フシギダネが呼ばれると草タイプと毒タイプを取得するので次のフシギソウのタイプは追加されない。
                     // 結果としてタイプリストの重複を避けることができる
                     self?.pokemons.forEach {
@@ -94,10 +90,10 @@ final class PokemonListPresenter: PokemonListPresenterInput {
                     }
                     // pokemonTypeItemsはlazyプロパティなので初期値が決まる
                     // 全タイプ対象のItemを追加
-                    self?.pokemonTypeItems.insert(ListItem(pokemonType: "all"), at: 0)
+                    self?.pokemonTypeNames.insert("all", at: 0)
 
 
-                    guard let pokemonTypeItems = self?.pokemonTypeItems else { fatalError("unexpectedError") }
+                    guard let pokemonTypeItems = self?.pokemonTypeNames else { fatalError("unexpectedError") }
                     guard let pokemons = self?.pokemons else { fatalError("unexpectedError") }
 
                     self?.view.updateView(pokemonTypeItems: pokemonTypeItems, pokemons: pokemons)
@@ -161,10 +157,9 @@ final class PokemonListPresenter: PokemonListPresenterInput {
         // 取得したタイプに該当するポケモンのみを要素とした配列を返す
         let filteredPokemons = pokemons.filter {
             // TODO: 要素がenumのケースだった場合の実装方法が分からない
-            guard let pokemon = $0 else { fatalError("unexpectedError") }
-            return pokemon.types.contains {
+            return $0.types.contains {
                 // "all"Cellをタップ時は無条件に配列の要素として追加する
-                if pokemonType == pokemonTypeItems[0].pokemonType { return true }
+                if pokemonType == "all" { return true }
                 return $0.type.name.contains(pokemonType)
             }
         }
@@ -180,6 +175,6 @@ final class PokemonListPresenter: PokemonListPresenterInput {
     }
 
     func didTapAlertCancelButton() {
-        view.updateView(pokemonTypeItems: pokemonTypeItems, pokemons: pokemons)
+        view.updateView(pokemonTypeItems: pokemonTypeNames, pokemons: pokemons)
     }
 }
