@@ -20,7 +20,7 @@ protocol PokemonListPresenterInput {
 // ViewからPresenterに処理を依頼する際の処理
 protocol PokemonListPresenterOutput: AnyObject {
     func startIndicator()
-    func updateView(pokemonTypeItems: [String], pokemons: [Pokemon])
+    func updateView(pokemonTypeNames: [String], pokemons: [Pokemon])
     func updateDataSoure(pokemons: [Pokemon])
     func showAlertMessage(errorMessage: String)
     func showPokemonDetailsVC(pokemon: Pokemon)
@@ -52,7 +52,6 @@ final class PokemonListPresenter {
     private var pokemonTypes = Set<String>()
     // CellのLabel&Snapshotに渡すデータの配列
     // PokemonTypeListのSetの要素をItemインスタンスの初期値に指定し、mapで配列にして返す
-    // TODO: これだとアクセスする度にallが追加される可能性がある為、要確認
     private var pokemonTypeNames: [String] { ["all"] + pokemonTypes }
     // PresenterはViewを弱参照で持つ。
     private weak var view: PokemonListPresenterOutput!
@@ -83,7 +82,7 @@ final class PokemonListPresenter {
                     strongSelf.pokemons.forEach {
                         $0.types.forEach { strongSelf.pokemonTypes.insert($0.type.name) }
                     }
-                    strongSelf.view.updateView(pokemonTypeItems: strongSelf.pokemonTypeNames, pokemons: strongSelf.pokemons)
+                    strongSelf.view.updateView(pokemonTypeNames: strongSelf.pokemonTypeNames, pokemons: strongSelf.pokemons)
                 }
             case .failure(let error as URLError):
                 DispatchQueue.main.async { [weak self] in
@@ -113,7 +112,6 @@ extension PokemonListPresenter: PokemonListPresenterInput {
     func didTapPokemonTypeCell(pokemonType: String) {
         // 取得したタイプに該当するポケモンのみを要素とした配列を返す
         let filteredPokemons = pokemons.filter {
-            // TODO: 要素がenumのケースだった場合の実装方法が分からない
             return $0.types.contains {
                 // "all"Cellをタップ時は無条件に配列の要素として追加する
                 if pokemonType == "all" { return true }
@@ -132,6 +130,6 @@ extension PokemonListPresenter: PokemonListPresenterInput {
     }
 
     func didTapAlertCancelButton() {
-        view.updateView(pokemonTypeItems: pokemonTypeNames, pokemons: pokemons)
+        view.updateView(pokemonTypeNames: pokemonTypeNames, pokemons: pokemons)
     }
 }
