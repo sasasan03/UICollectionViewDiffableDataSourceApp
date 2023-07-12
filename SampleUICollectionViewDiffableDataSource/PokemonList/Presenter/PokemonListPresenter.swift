@@ -52,7 +52,6 @@ final class PokemonListPresenter {
     private var pokemonTypes = Set<String>()
     // CellのLabel&Snapshotに渡すデータの配列
     // PokemonTypeListのSetの要素をItemインスタンスの初期値に指定し、mapで配列にして返す
-    // TODO: これだとアクセスする度にallが追加される可能性がある為、要確認
     private var pokemonTypeNames: [String] { ["all"] + pokemonTypes }
     // PresenterはViewを弱参照で持つ。
     private weak var view: PokemonListPresenterOutput!
