@@ -77,8 +77,6 @@ final class PokemonListPresenter {
                     // 順次要素を追加
                     pokemonsData.forEach {
                         self?.pokemons.append($0)
-                        print("pokemonsの中身：", self?.pokemons)
-//                        self?.pokemons.append(Item(pokemon: $0))
                     }
                     // ポケモン図鑑No.の昇順になるよう並び替え
                     self?.pokemons.sort { $0.id < $1.id }
