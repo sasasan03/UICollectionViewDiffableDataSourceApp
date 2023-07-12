@@ -70,7 +70,8 @@ extension PokemonListViewController: PokemonListPresenterOutput {
         collectionView.reloadData()
     }
 
-    func updateView(pokemonTypeItems: [ListItem], pokemons: [ListItem]) {
+    // 通信完了時に実行
+    func updateView(pokemonTypeNames: [String], pokemons: [Pokemon]) {
         indicator.stopAnimating()
         indicator.isHidden = true
         view.alpha = 1.0
@@ -80,7 +81,8 @@ extension PokemonListViewController: PokemonListPresenterOutput {
         collectionView.reloadData()
     }
 
-    func updateDataSoure(pokemons: [ListItem]) {
+    // DiffableDataSource更新時に実行
+    func updateDataSoure(pokemons: [Pokemon]) {
         applySnapshot(items: pokemons, section: .pokemonList)
     }
 
