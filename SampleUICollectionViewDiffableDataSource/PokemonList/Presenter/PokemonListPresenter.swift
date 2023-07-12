@@ -47,7 +47,7 @@ final class PokemonListPresenter: PokemonListPresenterInput {
     static let identifier = "PokemonList"
     
     // 通信で取得してパースしたデータを格納する配列
-    private var pokemons: [ListItem] = []
+    private var pokemons: [Pokemon] = []
     // ポケモンのタイプをまとめるSet
     private var pokemonTypes = Set<String>()
     // CellのLabel&Snapshotに渡すデータの配列
@@ -76,21 +76,21 @@ final class PokemonListPresenter: PokemonListPresenterInput {
                 DispatchQueue.main.async {
                     // 順次要素を追加
                     pokemonsData.forEach {
-                        self?.pokemons.append(ListItem.pokemon($0))
+                        self?.pokemons.append($0)
                         print("pokemonsの中身：", self?.pokemons)
 //                        self?.pokemons.append(Item(pokemon: $0))
                     }
                     // ポケモン図鑑No.の昇順になるよう並び替え
                     // TODO: 要素がenumのケースだった場合の実装方法が分からない
                     self?.pokemons.sort {
-                        guard let pokedexNumber = $0.pokemon else { fatalError("unexpectedError") }
-                        guard let anotherPokedexNumber = $1.pokemon else { fatalError("unexpectedError") }
+                        guard let pokedexNumber = $0 else { fatalError("unexpectedError") }
+                        guard let anotherPokedexNumber = $1 else { fatalError("unexpectedError") }
                         return pokedexNumber.id < anotherPokedexNumber.id
                     }
                     // Setは要素を一意にする為、一度追加されたタイプを自動で省いてくれる。(例: フシギダネが呼ばれると草タイプと毒タイプを取得するので次のフシギソウのタイプは追加されない。
                     // 結果としてタイプリストの重複を避けることができる
                     self?.pokemons.forEach {
-                        $0.pokemon?.types.forEach { self?.pokemonTypes.insert($0.type.name) }
+                        $0.types.forEach { self?.pokemonTypes.insert($0.type.name) }
                     }
                     // pokemonTypeItemsはlazyプロパティなので初期値が決まる
                     // 全タイプ対象のItemを追加
@@ -161,7 +161,7 @@ final class PokemonListPresenter: PokemonListPresenterInput {
         // 取得したタイプに該当するポケモンのみを要素とした配列を返す
         let filteredPokemons = pokemons.filter {
             // TODO: 要素がenumのケースだった場合の実装方法が分からない
-            guard let pokemon = $0.pokemon else { fatalError("unexpectedError") }
+            guard let pokemon = $0 else { fatalError("unexpectedError") }
             return pokemon.types.contains {
                 // "all"Cellをタップ時は無条件に配列の要素として追加する
                 if pokemonType == pokemonTypeItems[0].pokemonType { return true }
