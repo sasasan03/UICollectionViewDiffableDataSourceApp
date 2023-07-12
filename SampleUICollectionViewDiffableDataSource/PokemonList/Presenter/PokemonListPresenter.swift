@@ -74,12 +74,8 @@ final class PokemonListPresenter {
             case .success(let pokemonsData):
                 print("pokemonsData", pokemonsData)
                 DispatchQueue.main.async {
-                    // 順次要素を追加
-                    pokemonsData.forEach {
-                        self?.pokemons.append($0)
-                    }
-                    // ポケモン図鑑No.の昇順になるよう並び替え
-                    self?.pokemons.sort { $0.id < $1.id }
+                    // 非同期処理で受け取ったpokeomの配列データをポケモン図鑑No.の昇順になるよう並び替え、pokemons配列に渡す
+                    self?.pokemons.append(contentsOf: pokemonsData.sorted(by: { $0.id < $1.id }))
                     // Setは要素を一意にする為、一度追加されたタイプを自動で省いてくれる。(例: フシギダネが呼ばれると草タイプと毒タイプを取得するので次のフシギソウのタイプは追加されない。
                     // 結果としてタイプリストの重複を避けることができる
                     self?.pokemons.forEach {
