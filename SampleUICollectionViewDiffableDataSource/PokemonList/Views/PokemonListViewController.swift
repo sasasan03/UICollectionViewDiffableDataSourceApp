@@ -76,14 +76,14 @@ extension PokemonListViewController: PokemonListPresenterOutput {
         indicator.isHidden = true
         view.alpha = 1.0
         // データソース登録
-        applyInitialSnapshots(pokemonTypeItems: pokemonTypeItems, pokemons: pokemons)
+        applyInitialSnapshots(pokemonTypeNames: pokemonTypeNames, pokemons: pokemons)
         // collectionView更新(DiffableDataSourceは不要かも？)
         collectionView.reloadData()
     }
 
     // DiffableDataSource更新時に実行
     func updateDataSoure(pokemons: [Pokemon]) {
-        applySnapshot(items: pokemons, section: .pokemonList)
+        applySnapshot(pokemons: pokemons, section: .pokemonList)
     }
 
     // 通信失敗時にアラートを表示する
@@ -234,7 +234,7 @@ extension PokemonListViewController {
 
 extension PokemonListViewController {
     /// 画面起動時にDataSourceにデータを登録
-    private func applyInitialSnapshots(pokemonTypeItems: [ListItem], pokemons: [ListItem] {
+    private func applyInitialSnapshots(pokemonTypeNames: [String], pokemons: [Pokemon] {
         print("pokemonTypeItems:", pokemonTypeItems)
         print("pokemons:", pokemons)
         // データをViewに反映させる為のDiffableDataSourceSnapshotクラスのインスタンスを生成
@@ -255,9 +255,9 @@ extension PokemonListViewController {
     }
 
     /// 新たなsnapshotをDataSourceにapplyしてデータ更新
-    private func applySnapshot(items: [ListItem], section: Section) {
+    private func applySnapshot(pokemons: [Pokemon], section: Section) {
         var snapshot = NSDiffableDataSourceSectionSnapshot<ListItem>()
-        snapshot.append(items)
+        snapshot.append(pokemons)
         dataSource.apply(snapshot, to: section, animatingDifferences: true)
     }
 }
