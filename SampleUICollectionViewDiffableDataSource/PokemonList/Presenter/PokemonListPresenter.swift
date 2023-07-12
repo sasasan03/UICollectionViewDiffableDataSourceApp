@@ -67,28 +67,28 @@ final class PokemonListPresenter {
         print(String(describing: PokemonListPresenter.self) + " " + "is deinitialized.")
     }
 
+    /// 通信を実行し、取得データを配列pokemonsに渡す
     private func fetchPokemons() {
         view.startIndicator()
         model.decodePokemonData(completion: { [weak self] result in
             switch result {
             case .success(let pokemonsData):
                 print("pokemonsData", pokemonsData)
-                DispatchQueue.main.async {
+                DispatchQueue.main.async { [weak self] in
+                    guard let strongSelf = self else { return }
                     // 非同期処理で受け取ったpokeomの配列データをポケモン図鑑No.の昇順になるよう並び替え、pokemons配列に渡す
-                    self?.pokemons.append(contentsOf: pokemonsData.sorted(by: { $0.id < $1.id }))
+                    strongSelf.pokemons.append(contentsOf: pokemonsData.sorted(by: { $0.id < $1.id }))
                     // Setは要素を一意にする為、一度追加されたタイプを自動で省いてくれる。(例: フシギダネが呼ばれると草タイプと毒タイプを取得するので次のフシギソウのタイプは追加されない。
                     // 結果としてタイプリストの重複を避けることができる
-                    self?.pokemons.forEach {
-                        $0.types.forEach { self?.pokemonTypes.insert($0.type.name) }
+                    strongSelf.pokemons.forEach {
+                        $0.types.forEach { strongSelf.pokemonTypes.insert($0.type.name) }
                     }
-                    guard let pokemonTypeItems = self?.pokemonTypeNames else { fatalError("unexpectedError") }
-                    guard let pokemons = self?.pokemons else { fatalError("unexpectedError") }
-
-                    self?.view.updateView(pokemonTypeItems: pokemonTypeItems, pokemons: pokemons)
+                    strongSelf.view.updateView(pokemonTypeItems: strongSelf.pokemonTypeNames, pokemons: strongSelf.pokemons)
                 }
             case .failure(let error as URLError):
-                DispatchQueue.main.async {
-                    self?.view.showAlertMessage(errorMessage: error.message)
+                DispatchQueue.main.async { [weak self] in
+                    guard let strongSelf = self else { return }
+                    strongSelf.view.showAlertMessage(errorMessage: error.message)
                 }
             case .failure:
                 fatalError("unexpectedError")
