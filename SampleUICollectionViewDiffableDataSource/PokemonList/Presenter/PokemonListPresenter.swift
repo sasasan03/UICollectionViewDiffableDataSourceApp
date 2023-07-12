@@ -41,7 +41,7 @@ enum Section: Int, CaseIterable {
     }
 }
 
-final class PokemonListPresenter: PokemonListPresenterInput {
+final class PokemonListPresenter {
     // ハードコーディング対策
     static let storyboardName = "PokemonList"
     static let identifier = "PokemonList"
@@ -106,7 +106,9 @@ final class PokemonListPresenter: PokemonListPresenterInput {
             }
         })
     }
+}
 
+extension PokemonListPresenter: PokemonListPresenterInput {
     // アプリ起動時にviewから通知
     func viewDidLoad() {
         fetchPokemons()
