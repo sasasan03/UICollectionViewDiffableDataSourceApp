@@ -102,20 +102,13 @@ extension PokemonListViewController: PokemonListPresenterOutput {
 // Cellタップ時に実行
 extension PokemonListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        // Sectionを取得
-        guard let sectionKind = Section(rawValue: indexPath.section) else { fatalError("unexpectedError") }
+        guard let listItem = dataSource.itemIdentifier(for: indexPath) else { return }
 
-        switch sectionKind {
-        case .pokemonTypeList:
-            // タップしたポケモンのタイプを取得
-            guard let pokemonTypeListItem = dataSource.itemIdentifier(for: indexPath) else { fatalError("unexpectedError") }
-            guard let pokemonType = pokemonTypeListItem.pokemonType else { fatalError("unexpectedError") }
-            presenter.didTapPokemonTypeCell(pokemonType: pokemonType)
-        case .pokemonList:
-            // タップしたポケモンを取得
-            guard let listItem = dataSource.itemIdentifier(for: indexPath) else { fatalError("unexpectedError") }
-            guard let pokemon = listItem.pokemon else { fatalError("unexpectedError") }
+        switch listItem {
+        case .pokemon(let pokemon):
             presenter.didTapPokemonCell(pokemon: pokemon)
+        case .pokemonType(let pokemonType):
+            presenter.didTapPokemonTypeCell(pokemonType: pokemonType)
         }
     }
 }
