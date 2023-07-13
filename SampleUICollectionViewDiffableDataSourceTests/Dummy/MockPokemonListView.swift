@@ -10,9 +10,6 @@ import XCTest
 @testable import SampleUICollectionViewDiffableDataSource
 
 class MockPokemonListView {
-    func updateDataSoure(pokemons: [ListItem]) {
-    }
-
     var count = 0
     var updateViewHistory: [[Pokemon]] = []
 
@@ -24,20 +21,17 @@ class MockPokemonListView {
 }
 
 extension MockPokemonListView: PokemonListPresenterOutput {
+    func updateDataSoure(pokemons: [SampleUICollectionViewDiffableDataSource.Pokemon]) {}
+
     func startIndicator() {
         print("Indicatorをスタート")
     }
 
-    func updateView(pokemonTypeItems: [ListItem], pokemons: [ListItem]) {
-        print("pokemonTypeItems", pokemonTypeItems)
-        print("pokemons", pokemons)
+    func updateView(pokemonTypeNames: [String], pokemons: [SampleUICollectionViewDiffableDataSource.Pokemon]) {
+        updateViewHistory.append(pokemons)
+        print("updateViewHistoryの中身：", updateViewHistory)
     }
-
-    // 実際はpokemonsがない。故にデータが期待通り渡されているかをテストすることができない。
-//    func updateView(pokemons: [Pokemon]) {
-//        updateViewHistory.append(pokemons)
-//        count += 1
-//    }
+    
     func showAlertMessage(errorMessage: String) {
         print("取得したエラー:", errorMessage)
     }
