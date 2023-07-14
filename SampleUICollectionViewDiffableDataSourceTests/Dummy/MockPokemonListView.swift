@@ -30,6 +30,7 @@ extension MockPokemonListView: PokemonListPresenterOutput {
     func updateView(pokemonTypeNames: [String], pokemons: [SampleUICollectionViewDiffableDataSource.Pokemon]) {
         updateViewHistory.append(pokemons)
         print("updateViewHistoryの中身：", updateViewHistory)
+        expectation.fulfill()
     }
     
     func showAlertMessage(errorMessage: String) {
