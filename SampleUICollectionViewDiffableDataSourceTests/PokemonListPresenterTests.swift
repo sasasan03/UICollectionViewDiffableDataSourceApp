@@ -19,8 +19,10 @@ final class PokemonListPresenterTests: XCTestCase {
 
         // 仮想通信を実行
         presenter.viewDidLoad()
-
         wait(for: [expectaion], timeout: 5)
+        
+        // mockPokemonListViewで定義されているupdateViewHistoryにデータが正しく渡されているかをテスト
+        XCTAssertEqual(mockPokemonListView.updateViewHistory[0][0].name, "pikachu")
     }
 
     
