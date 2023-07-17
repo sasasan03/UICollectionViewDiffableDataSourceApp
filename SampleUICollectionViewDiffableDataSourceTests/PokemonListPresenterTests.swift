@@ -37,6 +37,12 @@ final class PokemonListPresenterTests: XCTestCase {
         // 仮想通信を実行
         presenter.viewDidLoad()
         wait(for: [expectaion], timeout: 5)
+
+        // mockPokemonListViewで定義されているupdateViewHistoryが空であることをテスト
+        XCTAssertEqual(mockPokemonListView.updateViewHistory[0], [])
+        // こっちの書き方がスマートな気がするがこっちは通らない
+//        XCTAssertTrue(mockPokemonListView.updateViewHistory[0].isEmpty)
+
     }
 
     // 5体のポケモンデータをViewに正しく渡せているかのテスト
