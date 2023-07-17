@@ -37,12 +37,28 @@ final class PokemonListPresenterTests: XCTestCase {
         // 仮想通信を実行
         presenter.viewDidLoad()
         wait(for: [expectaion], timeout: 5)
+
+        // mockPokemonListViewで定義されているupdateViewHistoryが空であることをテスト
+        XCTAssertEqual(mockPokemonListView.updateViewHistory[0], [])
+        // こっちの書き方がスマートな気がするがこっちは通らない
+//        XCTAssertTrue(mockPokemonListView.updateViewHistory[0].isEmpty)
+
     }
 
-    // 5体のポケモンデータが取得できているかテスト
+    // 5体のポケモンデータをViewに正しく渡せているかのテスト
     func testFivePokemonsList() {
+        let expectaion = self.expectation(description: "Viewが更新された")
         // 5体のポケモンデータが含まれたデータ配列を代入
         let mockAPI = MockAPI(mockPokemonData: PokemonListSampleData().favoriteFivePokemons)
+        let mockPokemonListView = MockPokemonListView(expectationForUpdateView: expectaion)
+        let presenter = PokemonListPresenter(view: mockPokemonListView, model: mockAPI)
+
+        // 仮想通信を実行
+        presenter.viewDidLoad()
+        wait(for: [expectaion], timeout: 5)
+
+        // mockPokemonListViewで定義されているupdateViewHistoryに5つのデータが正しく渡されているかをテスト
+        XCTAssertEqual(mockPokemonListView.updateViewHistory[0].count, 5)
     }
 
     // エラー発生時のテスト
