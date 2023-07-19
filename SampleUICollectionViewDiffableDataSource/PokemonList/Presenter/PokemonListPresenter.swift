@@ -76,7 +76,8 @@ final class PokemonListPresenter {
                 DispatchQueue.main.async { [weak self] in
                     guard let strongSelf = self else { return }
                     // 非同期処理で受け取ったpokeomの配列データをポケモン図鑑No.の昇順になるよう並び替え、pokemons配列に渡す
-                    strongSelf.pokemons.append(contentsOf: pokemonsData.sorted(by: { $0.id < $1.id }))
+                    strongSelf.pokemons.append(contentsOf: pokemonsData)
+//                        .sorted(by: { $0.id < $1.id })
                     // Setは要素を一意にする為、一度追加されたタイプを自動で省いてくれる。(例: フシギダネが呼ばれると草タイプと毒タイプを取得するので次のフシギソウのタイプは追加されない。
                     // 結果としてタイプリストの重複を避けることができる
                     strongSelf.pokemons.forEach {
@@ -84,6 +85,7 @@ final class PokemonListPresenter {
                     }
                     strongSelf.view.updateView(pokemonTypeNames: strongSelf.pokemonTypeNames, pokemons: strongSelf.pokemons)
                 }
+            // URLErrorにキャストすべきではない。HTTPErrorが来る場合もあればAPIErrorが来る可能性もある。つまり、PokemonListPresenterOutputのデリゲートメソッドから作り直す必要がある？
             case .failure(let error as URLError):
                 DispatchQueue.main.async { [weak self] in
                     guard let strongSelf = self else { return }
