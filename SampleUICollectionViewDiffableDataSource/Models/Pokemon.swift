@@ -10,9 +10,6 @@ import Foundation
 // ポケモンのデータ構造
 // 🍎Hashableにしたらインスタンスが一意となるようにUUIDの生成が必要なんじゃなかったか？
 struct Pokemon: Decodable, Hashable {
-    static func == (lhs: Pokemon, rhs: Pokemon) -> Bool {
-        lhs.id == rhs.id
-    }
     // ポケモンの名前
     let name: String
     // ポケモンの図鑑No.
@@ -48,7 +45,7 @@ struct SpeciesReference: Decodable, Hashable {
 
 // "Type"が命名で利用できず、他に適切な表現が思い浮かばなかった。
 struct Mode: Decodable, Hashable {
-let name: String
+    let name: String
 }
 
 //　ポケモンの説明文のリンク先で取得した値を格納するためのModel

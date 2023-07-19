@@ -13,7 +13,7 @@ struct MockAPI: APIInput {
     var apiError: APIError?
 
     // ダミーデータを定義
-    var mockPokemonData: [Pokemon]?
+    var mockPokemonData: [Pokemon]
 
     // TODO: (前に調べた気はしつつも)なぜ以下の場合はコンパイルエラーになるのか調査
 //    let sampleData = PokemonListSampleData()
@@ -23,6 +23,6 @@ struct MockAPI: APIInput {
         if let httpError { completion(.failure(httpError)) }
         if let apiError { completion(.failure(apiError)) }
         // ここに渡すデータが固定ではなく、変動して欲しい
-        completion(.success(mockPokemonData ?? []))
+        completion(.success(mockPokemonData))
     }
 }
