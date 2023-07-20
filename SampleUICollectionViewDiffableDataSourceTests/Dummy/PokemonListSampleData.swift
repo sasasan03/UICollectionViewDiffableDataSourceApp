@@ -10,7 +10,7 @@ import Foundation
 
 struct PokemonListSampleData {
     // ピカチューのデータ
-    let pikachu = [
+    let pikachu =
         Pokemon(
             name: "pikachu",
             id: 25,
@@ -19,7 +19,6 @@ struct PokemonListSampleData {
                 TypeEntry(type: Mode(name: "electric"))
             ]
         )
-    ]
 
     // 5体のポケモンのデータ
     let favoriteFivePokemons = [
@@ -63,6 +62,6 @@ struct PokemonListSampleData {
             types: [
                 TypeEntry(type: Mode(name: "electric"))
             ]
-        ),
+        )
     ]
 }
