@@ -59,16 +59,18 @@ final class PokemonListPresenterTests: XCTestCase {
     }
 
     // エラー発生時のテスト
-//    func testCheckError() {
-//        let expectaion = self.expectation(description: "Viewが更新された")
-//
-//        // パース処理失敗時のエラーを代入
-//        let mockAPI = MockAPI(apiError: .decodingFailed)
-//        let mockPokemonListView = MockPokemonListView(expectationForUpdateView: expectaion)
-//        let presenter = PokemonListPresenter(view: mockPokemonListView, model: mockAPI)
-//
-//        // 仮想通信を実行
-//        presenter.viewDidLoad()
-//        wait(for: [expectaion], timeout: 5)
-//    }
+    func testCheckError() {
+        let expectaion = self.expectation(description: "Viewが更新された")
+
+        // パース処理失敗時のエラーを代入
+        let mockAPI = MockAPI(apiError: .decodingFailed, mockPokemonData: [])
+        let mockPokemonListView = MockPokemonListView(expectationForUpdateView: expectaion)
+        let presenter = PokemonListPresenter(view: mockPokemonListView, model: mockAPI)
+
+        // 仮想通信を実行
+        presenter.viewDidLoad()
+        wait(for: [expectaion], timeout: 5)
+
+        XCTAssertEqual(mockPokemonListView.errorMessage, "デコードに失敗しました")
+    }
 }
