@@ -91,6 +91,16 @@ final class PokemonListPresenter {
                     guard let strongSelf = self else { return }
                     strongSelf.view.showAlertMessage(errorMessage: error.message)
                 }
+            case .failure(let error as HTTPError):
+                DispatchQueue.main.async { [weak self] in
+                    guard let strongSelf = self else { return }
+                    strongSelf.view.showAlertMessage(errorMessage: error.description)
+                }
+            case .failure(let error as APIError):
+                DispatchQueue.main.async { [weak self] in
+                    guard let strongSelf = self else { return }
+                    strongSelf.view.showAlertMessage(errorMessage: error.description)
+                }
             case .failure:
                 fatalError("unexpectedError")
             }
