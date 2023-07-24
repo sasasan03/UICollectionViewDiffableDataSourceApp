@@ -23,6 +23,7 @@ final class PokemonListPresenterTests: XCTestCase {
         
         // mockPokemonListViewで定義されているupdateViewHistoryにデータが正しく渡されているかをテスト
         XCTAssertEqual(mockPokemonListView.updateViewHistory, [[PokemonListSampleData().pikachu]])
+        XCTAssertEqual(mockPokemonListView.showAlertMessageHistory, [])
     }
 
     // 通信処理後、View側で空データになっているかをテスト
@@ -40,6 +41,7 @@ final class PokemonListPresenterTests: XCTestCase {
 
         // mockPokemonListViewで定義されているupdateViewHistoryが空であることをテスト
         XCTAssertEqual(mockPokemonListView.updateViewHistory, [[]])
+        XCTAssertEqual(mockPokemonListView.showAlertMessageHistory, [])
     }
 
     // 5体のポケモンデータをViewに正しく渡せているかのテスト
@@ -56,6 +58,7 @@ final class PokemonListPresenterTests: XCTestCase {
 
         // mockPokemonListViewで定義されているupdateViewHistoryに5つのデータが正しく渡されているかをテスト
         XCTAssertEqual(mockPokemonListView.updateViewHistory, [PokemonListSampleData().favoriteFivePokemons])
+        XCTAssertEqual(mockPokemonListView.showAlertMessageHistory, [])
     }
 
     // エラー発生時のテスト
@@ -71,6 +74,7 @@ final class PokemonListPresenterTests: XCTestCase {
         presenter.viewDidLoad()
         wait(for: [expectaion], timeout: 5)
 
-        XCTAssertEqual(mockPokemonListView.errorMessage, "デコードに失敗しました")
+        XCTAssertEqual(mockPokemonListView.updateViewHistory, [[]])
+        XCTAssertEqual(mockPokemonListView.showAlertMessageHistory, ["デコードに失敗しました"])
     }
 }
