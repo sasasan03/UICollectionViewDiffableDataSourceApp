@@ -12,7 +12,7 @@ import XCTest
 class MockPokemonListView {
     var count = 0
     var updateViewHistory: [[Pokemon]] = []
-    var errorMessage: String = ""
+    var showAlertMessageHistory: [String] = []
 
     private var expectation: XCTestExpectation
 
@@ -36,7 +36,7 @@ extension MockPokemonListView: PokemonListPresenterOutput {
     
     func showAlertMessage(errorMessage: String) {
         print("取得したエラー:", errorMessage)
-        self.errorMessage = errorMessage
+        showAlertMessageHistory.append(errorMessage)
     }
 
     func showPokemonDetailsVC(pokemon: SampleUICollectionViewDiffableDataSource.Pokemon) {}
