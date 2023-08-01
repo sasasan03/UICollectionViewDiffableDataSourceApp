@@ -11,26 +11,14 @@ import Foundation
 protocol APIInput {
     //    func asyncFetchPokemonData() async -> [Pokemon]
     func decodePokemonData(completion: @escaping (Result<[Pokemon], Error>) -> Void)
+    func decodePokemonData() async throws -> [Pokemon]
 }
 
 
 final class API: APIInput {
     private var dataArray: [Data] = []
-    //    呼び出し時にネスト地獄を避けるためにasync-awaitに対応させる処理を定義
-    //    func asyncFetchPokemonData() async -> [Pokemon] {
-    //        return await withCheckedContinuation { continuation in
-    //            decodePokemonData { result in
-    //                switch result {
-    //                case .success(let pokemons):
-    //                    continuation.resume(returning: pokemons)
-    //                case .failure(let error):
-    //                    // 🍎Neverって何。
-    //                    continuation.resume(throwing: error as! Never)
-    //                }
-    //            }
-    //        }
-    //    }
-    
+    private var pokemons: [Pokemon] = []
+
     // 通信によって取得したデータをパース
     // 取得したポケモンのデータをSwiftの型として扱う為にデコード
     func decodePokemonData(completion: @escaping (Result<[Pokemon], Error>) -> Void) {
@@ -55,6 +43,19 @@ final class API: APIInput {
                 fatalError("Unexpected Error")
             }
         })
+    }
+
+    func decodePokemonData() async throws -> [Pokemon] {
+        do {
+            let dataArray = try await fetchPokemonData()
+            try dataArray.forEach {
+                let pokemon = try JSONDecoder().decode(Pokemon.self, from: $0)
+                pokemons.append(pokemon)
+            }
+        } catch {
+            throw error
+        }
+        return pokemons
     }
 
     // 通信を実行
