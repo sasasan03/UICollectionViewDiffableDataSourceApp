@@ -11,7 +11,7 @@ import UIKit
 // ViewからPresenterに処理を依頼する際に呼ばれるメソッド
 protocol PokemonListPresenterInput {
     func viewDidLoad()
-    func viewDidLoad2() async throws
+    func viewDidLoad2()
     func didTapRestartURLSessionButton()
     func didTapAlertCancelButton()
     func didTapPokemonTypeCell(pokemonType: String)
@@ -108,28 +108,30 @@ final class PokemonListPresenter {
         })
     }
 
-    private func fetchPokemons2() async throws {
+    private func fetchPokemons2() {
         view.startIndicator()
-        do {
-            let pokemonsData = try await model.decodePokemonData()
-            pokemons.append(contentsOf: pokemonsData)
-            pokemons.forEach {
-                $0.types.forEach { pokemonTypes.insert($0.type.name) }
+        Task {
+            do {
+                let pokemonsData = try await model.decodePokemonData()
+                pokemons.append(contentsOf: pokemonsData)
+                pokemons.forEach {
+                    $0.types.forEach { pokemonTypes.insert($0.type.name) }
+                }
+                view.updateView(pokemonTypeNames: pokemonTypeNames, pokemons: pokemons)
+            } catch let error as URLError {
+                view.showAlertMessage(errorMessage: error.message)
+            } catch let error as HTTPError {
+                view.showAlertMessage(errorMessage: error.description)
+            } catch let error as APIError {
+                view.showAlertMessage(errorMessage: error.description)
             }
-            view.updateView(pokemonTypeNames: pokemonTypeNames, pokemons: pokemons)
-        } catch let error as URLError {
-            view.showAlertMessage(errorMessage: error.message)
-        } catch let error as HTTPError {
-            view.showAlertMessage(errorMessage: error.description)
-        } catch let error as APIError {
-            view.showAlertMessage(errorMessage: error.description)
         }
     }
 }
 
 extension PokemonListPresenter: PokemonListPresenterInput {
-    func viewDidLoad2() async throws {
-         try await fetchPokemons2()
+    func viewDidLoad2() {
+         fetchPokemons2()
     }
 
     // アプリ起動時にviewから通知

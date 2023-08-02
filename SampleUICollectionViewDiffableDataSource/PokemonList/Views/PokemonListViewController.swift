@@ -29,7 +29,9 @@ final class PokemonListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpCollectionView()
-        presenter.viewDidLoad()
+
+//        presenter.viewDidLoad()
+        presenter.viewDidLoad2()
     }
 
     // Cellのレイアウトを構築
@@ -72,13 +74,13 @@ extension PokemonListViewController: PokemonListPresenterOutput {
 
     // 通信完了時に実行
     func updateView(pokemonTypeNames: [String], pokemons: [Pokemon]) {
-        indicator.stopAnimating()
-        indicator.isHidden = true
-        view.alpha = 1.0
-        // データソース登録
-        applyInitialSnapshots(pokemonTypeNames: pokemonTypeNames, pokemons: pokemons)
-        // collectionView更新(DiffableDataSourceは不要かも？)
-        collectionView.reloadData()
+        DispatchQueue.main.async {
+            self.indicator.stopAnimating()
+            self.indicator.isHidden = true
+            self.view.alpha = 1.0
+            // データソース登録
+            self.applyInitialSnapshots(pokemonTypeNames: pokemonTypeNames, pokemons: pokemons)
+        }
     }
 
     // DiffableDataSource更新時に実行
