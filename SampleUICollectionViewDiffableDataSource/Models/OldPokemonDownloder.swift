@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class OldPokemonDownloder {
+final class OldPokemonDownloder: PokemonDownloderDelegate {
     // 通信で取得してパースしたデータを格納する配列
     private var pokemons: [Pokemon] = []
     // ポケモンのタイプをまとめるSet
@@ -16,7 +16,7 @@ final class OldPokemonDownloder {
     // PokemonTypeListのSetの要素をItemインスタンスの初期値に指定し、mapで配列にして返す
     private var pokemonTypeNames: [String] { ["all"] + pokemonTypes }
 
-    func fetchPokemons(view: PokemonListPresenterOutput, model: APIInput) {
+    func fetchPokemons(model: APIInput, view: PokemonListPresenterOutput) {
         view.startIndicator()
         // selfを追加
         model.decodePokemonData(completion: { [self] result in
@@ -32,7 +32,7 @@ final class OldPokemonDownloder {
                     }
                     view.updateView(pokemonTypeNames: self.pokemonTypeNames, pokemons: self.pokemons)
                 }
-            // URLErrorにキャストすべきではない。HTTPErrorが来る場合もあればAPIErrorが来る可能性もある。つまり、PokemonListPresenterOutputのデリゲートメソッドから作り直す必要がある？
+                // URLErrorにキャストすべきではない。HTTPErrorが来る場合もあればAPIErrorが来る可能性もある。つまり、PokemonListPresenterOutputのデリゲートメソッドから作り直す必要がある？
             case .failure(let error as URLError):
                 DispatchQueue.main.async {
                     view.showAlertMessage(errorMessage: error.message)

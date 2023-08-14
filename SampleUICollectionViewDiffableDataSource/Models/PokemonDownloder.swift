@@ -7,8 +7,11 @@
 
 import Foundation
 
+protocol PokemonDownloderDelegate {
+    func fetchPokemons(model: APIInput, view: PokemonListPresenterOutput)
+}
 
-final class PokemonDownloder {
+final class PokemonDownloder: PokemonDownloderDelegate {
     // 通信で取得してパースしたデータを格納する配列
     private var pokemons: [Pokemon] = []
     // ポケモンのタイプをまとめるSet
