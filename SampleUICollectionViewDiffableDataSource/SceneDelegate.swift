@@ -24,7 +24,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         // 起動画面のModel,Presenterのインスタンスを生成
         let model = API()
-        let pokemonListPresenter = PokemonListPresenter(view: pokemonListVC, model: model)
+        let pokemonDownloder = PokemonDownloder()
+        let pokemonListPresenter = PokemonListPresenter(view: pokemonListVC, model: model, pokemonDownloder: pokemonDownloder)
         // 生成したPresenterを起動画面にセット
         pokemonListVC.inject(presenter: pokemonListPresenter)
 

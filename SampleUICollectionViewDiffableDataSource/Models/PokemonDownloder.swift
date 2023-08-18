@@ -8,7 +8,7 @@
 import Foundation
 
 protocol PokemonDownloderDelegate {
-    func fetchPokemons(model: APIInput, view: PokemonListPresenterOutput)
+    func fetchPokemons(model: APIInput, view: PokemonListPresenterOutput, completion: @escaping (Result<[Pokemon], Error>) -> Void)
 }
 
 final class PokemonDownloder: PokemonDownloderDelegate {
@@ -20,23 +20,32 @@ final class PokemonDownloder: PokemonDownloderDelegate {
     // PokemonTypeListのSetの要素をItemインスタンスの初期値に指定し、mapで配列にして返す
     private var pokemonTypeNames: [String] { ["all"] + pokemonTypes }
 
+    // Async-awaitの場合はどうしようか。.
+    func fetchPokemons(model: APIInput, view: PokemonListPresenterOutput, completion: @escaping (Result<[Pokemon], Error>) -> Void) {
+        view.startIndicator()
+        Task
+    }
+
     func fetchPokemons(model: APIInput, view: PokemonListPresenterOutput) {
         view.startIndicator()
         Task {
-            do {
-                let pokemonsData = try await model.decodePokemonData()
-                pokemons.append(contentsOf: pokemonsData)
-                pokemons.forEach {
-                    $0.types.forEach { pokemonTypes.insert($0.type.name) }
-                }
-                view.updateView(pokemonTypeNames: pokemonTypeNames, pokemons: pokemons)
-            } catch let error as URLError {
-                view.showAlertMessage(errorMessage: error.message)
-            } catch let error as HTTPError {
-                view.showAlertMessage(errorMessage: error.description)
-            } catch let error as APIError {
-                view.showAlertMessage(errorMessage: error.description)
-            }
+
         }
     }
 }
+
+
+//do {
+//    let pokemonsData = try await model.decodePokemonData()
+//    pokemons.append(contentsOf: pokemonsData)
+//    pokemons.forEach {
+//        $0.types.forEach { pokemonTypes.insert($0.type.name) }
+//    }
+//    view.updateView(pokemonTypeNames: pokemonTypeNames, pokemons: pokemons)
+//} catch let error as URLError {
+//    view.showAlertMessage(errorMessage: error.message)
+//} catch let error as HTTPError {
+//    view.showAlertMessage(errorMessage: error.description)
+//} catch let error as APIError {
+//    view.showAlertMessage(errorMessage: error.description)
+//}
