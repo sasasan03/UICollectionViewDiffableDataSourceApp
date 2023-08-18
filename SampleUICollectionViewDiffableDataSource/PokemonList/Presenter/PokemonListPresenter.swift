@@ -11,7 +11,6 @@ import UIKit
 // ViewからPresenterに処理を依頼する際に呼ばれるメソッド
 protocol PokemonListPresenterInput {
     func viewDidLoad()
-    func viewDidLoad2()
     func didTapRestartURLSessionButton()
     func didTapAlertCancelButton()
     func didTapPokemonTypeCell(pokemonType: String)
@@ -56,11 +55,13 @@ final class PokemonListPresenter {
     private var pokemonTypeNames: [String] { ["all"] + pokemonTypes }
     // PresenterはViewを弱参照で持つ。
     private weak var view: PokemonListPresenterOutput!
-    var model: APIInput
+    private var model: APIInput
+    private var pokemonDownloder: PokemonDownloderDelegate
 
-    init(view: PokemonListPresenterOutput, model: APIInput) {
+    init(view: PokemonListPresenterOutput, model: APIInput, pokemonDownloder: PokemonDownloderDelegate) {
         self.view = view
         self.model = model
+        self.pokemonDownloder = pokemonDownloder
     }
 
     deinit {
@@ -69,8 +70,8 @@ final class PokemonListPresenter {
 
     /// 通信を実行し、取得データを配列pokemonsに渡す
     private func fetchPokemons() {
-        view.startIndicator()
-        model.decodePokemonData(completion: { [weak self] result in
+        // Modelから受け取った値をpokemonsに
+        pokemonDownloder.fetchPokemons(model: model, view: view) { [weak self] result in
             switch result {
             case .success(let pokemonsData):
                 print("pokemonsData", pokemonsData)
@@ -78,7 +79,7 @@ final class PokemonListPresenter {
                     guard let strongSelf = self else { return }
                     // 非同期処理で受け取ったpokeomの配列データをポケモン図鑑No.の昇順になるよう並び替え、pokemons配列に渡す
                     strongSelf.pokemons.append(contentsOf: pokemonsData)
-//                        .sorted(by: { $0.id < $1.id })
+                    //                        .sorted(by: { $0.id < $1.id })
                     // Setは要素を一意にする為、一度追加されたタイプを自動で省いてくれる。(例: フシギダネが呼ばれると草タイプと毒タイプを取得するので次のフシギソウのタイプは追加されない。
                     // 結果としてタイプリストの重複を避けることができる
                     strongSelf.pokemons.forEach {
@@ -86,7 +87,7 @@ final class PokemonListPresenter {
                     }
                     strongSelf.view.updateView(pokemonTypeNames: strongSelf.pokemonTypeNames, pokemons: strongSelf.pokemons)
                 }
-            // URLErrorにキャストすべきではない。HTTPErrorが来る場合もあればAPIErrorが来る可能性もある。つまり、PokemonListPresenterOutputのデリゲートメソッドから作り直す必要がある？
+                // URLErrorにキャストすべきではない。HTTPErrorが来る場合もあればAPIErrorが来る可能性もある。つまり、PokemonListPresenterOutputのデリゲートメソッドから作り直す必要がある？
             case .failure(let error as URLError):
                 DispatchQueue.main.async { [weak self] in
                     guard let strongSelf = self else { return }
@@ -105,7 +106,7 @@ final class PokemonListPresenter {
             case .failure:
                 fatalError("unexpectedError")
             }
-        })
+        }
     }
 
     private func fetchPokemons2() {
@@ -130,10 +131,6 @@ final class PokemonListPresenter {
 }
 
 extension PokemonListPresenter: PokemonListPresenterInput {
-    func viewDidLoad2() {
-         fetchPokemons2()
-    }
-
     // アプリ起動時にviewから通知
     func viewDidLoad() {
         fetchPokemons()

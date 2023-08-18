@@ -30,8 +30,8 @@ final class PokemonListViewController: UIViewController {
         super.viewDidLoad()
         setUpCollectionView()
 
-//        presenter.viewDidLoad()
-        presenter.viewDidLoad2()
+        presenter.viewDidLoad()
+//        presenter.viewDidLoad2()
     }
 
     // Cellのレイアウトを構築
