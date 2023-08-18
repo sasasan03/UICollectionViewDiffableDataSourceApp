@@ -8,7 +8,7 @@
 import Foundation
 
 protocol PokemonDownloderDelegate {
-    func fetchPokemons(model: APIInput, view: PokemonListPresenterOutput, completion: @escaping (Result<[Pokemon], Error>) -> Void)
+    func fetchPokemons(model: APIInput, view: PokemonListPresenterOutput) async throws -> [Pokemon]
 }
 
 struct PokemonDownloder: PokemonDownloderDelegate {
@@ -21,8 +21,13 @@ struct PokemonDownloder: PokemonDownloderDelegate {
     // PokemonTypeListのSetの要素をItemインスタンスの初期値に指定し、mapで配列にして返す
     private var pokemonTypeNames: [String] { ["all"] + pokemonTypes }
 
-    // TODO: Async-awaitの場合はどうしようか..
-    func fetchPokemons(model: APIInput, view: PokemonListPresenterOutput, completion: @escaping (Result<[Pokemon], Error>) -> Void) {
+    func fetchPokemons(model: APIInput, view: PokemonListPresenterOutput) async throws -> [Pokemon] {
         view.startIndicator()
+        do {
+            let pokemonsData = try await model.decodePokemonData()
+            return pokemonsData
+        } catch {
+            throw error
+        }
     }
 }
