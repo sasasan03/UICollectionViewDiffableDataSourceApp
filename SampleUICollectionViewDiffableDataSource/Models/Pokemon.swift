@@ -7,19 +7,48 @@
 
 import Foundation
 
+protocol DTODecodable: Decodable {
+    associatedtype DTO: Decodable
+    init(dto: DTO) throws
+}
+
+extension DTODecodable {
+    init(from decoder: Decoder) throws {
+        let dto = try DTO(from: decoder)
+        self = try Self.init(dto: dto)
+    }
+}
+
+
 // ポケモンのデータ構造
 // 🍎Hashableにしたらインスタンスが一意となるようにUUIDの生成が必要なんじゃなかったか？
 struct Pokemon: Decodable, Hashable {
-    // ポケモンの名前
     let name: String
-    // ポケモンの図鑑No.
     let id: Int
-    // ポケモンの画像
-    let sprites: Image
-    // ポケモンのタイプ
-    let types: [TypeEntry]
-    // ポケモンの説明文
-//    let species: [SpeciesReference]
+    let image: String
+    let type: [String]
+}
+
+extension Pokemon: DTODecodable {
+    struct DTO: Decodable {
+        // ポケモンの名前
+        let name: String
+        // ポケモンの図鑑No.
+        let id: Int
+        // ポケモンの画像
+        let sprites: Image
+        // ポケモンのタイプ
+        let types: [TypeEntry]
+    }
+
+    // DTOからプロジェクトで使用するModel(これがEntity?)に値を渡す
+    // 型変換をして渡す値が存在し、変換失敗の可能性を考慮してthrowsキーワードを付与
+    init(dto: DTO) throws {
+        self.name = dto.name
+        self.id = dto.id
+        self.image = dto.sprites.frontImage
+//        ...
+    }
 }
 
 // 画像のデータ構造
