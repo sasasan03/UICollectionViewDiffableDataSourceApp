@@ -31,7 +31,6 @@ final class PokemonListViewController: UIViewController {
         setUpCollectionView()
 
         presenter.viewDidLoad()
-//        presenter.viewDidLoad2()
     }
 
     // Cellのレイアウトを構築
@@ -61,9 +60,12 @@ extension PokemonListViewController: PokemonListPresenterOutput {
 
     // インジケータを起動させる
     func startIndicator() {
-        view.alpha = 0.5
-        indicator.isHidden = false
-        indicator.startAnimating()
+        DispatchQueue.main.async { [weak self] in
+            guard let strongSelf = self else { return }
+            strongSelf.view.alpha = 0.5
+            strongSelf.indicator.isHidden = false
+            strongSelf.indicator.startAnimating()
+        }
     }
 
     // Viewを更新
