@@ -148,7 +148,7 @@ extension PokemonListViewController {
         let pokemonCellRegistration = UICollectionView.CellRegistration<PokemonCell, ListItem>(cellNib: PokemonCell.nib) { cell, _, listItem in
             switch listItem {
             case .pokemon(let pokemon):
-                cell.configure(imageURL: pokemon.sprites.frontImage, name: pokemon.name)
+                cell.configure(imageURL: pokemon.image, name: pokemon.name)
             case .pokemonType:
                 fatalError()
             }

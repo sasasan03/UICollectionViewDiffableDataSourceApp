@@ -35,7 +35,7 @@ extension PokemonDetailsViewController: PokemonDetailsPresenterOutput {
     func configure(pokemon: Pokemon?) {
         // 🍎ここに関しては強制終了させずとも、エラー時の代替データを表示させる処理をthrowする方向で良いかも？
         guard let pokemon = pokemon else { fatalError("unexpected error") }
-        iconView.kf.setImage(with: URL(string: pokemon.sprites.frontImage))
+        iconView.kf.setImage(with: URL(string: pokemon.image))
         nameLabel.text = pokemon.name
     }
 }

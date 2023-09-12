@@ -76,7 +76,7 @@ final class PokemonListPresenter {
             // Setは要素を一意にする為、一度追加されたタイプを自動で省いてくれる。(例: フシギダネが呼ばれると草タイプと毒タイプを取得するので次のフシギソウのタイプは追加されない。
             // 結果としてタイプリストの重複を避けることができる
             pokemons.forEach {
-                $0.types.forEach { pokemonTypes.insert($0.type.name) }
+                $0.types.forEach { pokemonTypes.insert($0) }
             }
             view.updateView(pokemonTypeNames: pokemonTypeNames, pokemons: pokemons)
         } catch let error as URLError {
@@ -112,7 +112,7 @@ extension PokemonListPresenter: PokemonListPresenterInput {
             return $0.types.contains {
                 // "all"Cellをタップ時は無条件に配列の要素として追加する
                 if pokemonType == "all" { return true }
-                return $0.type.name.contains(pokemonType)
+                return $0.contains(pokemonType)
             }
         }
         // DataSrourceを更新
