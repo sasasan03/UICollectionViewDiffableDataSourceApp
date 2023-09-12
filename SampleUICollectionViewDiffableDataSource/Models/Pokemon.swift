@@ -9,19 +9,8 @@ import Foundation
 
 // ポケモンのデータ構造
 // 🍎Hashableにしたらインスタンスが一意となるようにUUIDの生成が必要なんじゃなかったか？
-struct Pokemon: Decodable, Hashable {
-    // ポケモンの名前
-    let name: String
-    // ポケモンの図鑑No.
-    let id: Int
-    // ポケモンの画像
-    let sprites: Image
-    // ポケモンのタイプ
-    let types: [TypeEntry]
-}
-
 /// DTOからデータを受け取り、プロジェクトで扱うEntity
-struct PokemonEntity {
+struct Pokemon: Hashable {
     // ポケモンの名前
     let name: String
     // ポケモンの図鑑No.

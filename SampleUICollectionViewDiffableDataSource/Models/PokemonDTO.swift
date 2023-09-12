@@ -18,12 +18,12 @@ struct PokemonDTO: Decodable {
      let types: [TypeEntry]
 
     ///  プロジェクトで扱うEntityを生成し、自身の値を渡す
-    func convertToPokemon() -> PokemonEntity {
+    func convertToPokemon() -> Pokemon {
         // TypeEntryの要素にアクセスし、シーケンスを生成
         let types = self.types.map { $0.type.name }
 
         // Pokemon(Entity)インスタンスを生成
-        return PokemonEntity(
+        return Pokemon(
             name: self.name,
             id: self.id,
             image: self.sprites.frontImage,
