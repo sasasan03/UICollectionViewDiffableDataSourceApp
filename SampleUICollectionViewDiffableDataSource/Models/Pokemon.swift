@@ -20,6 +20,18 @@ struct Pokemon: Decodable, Hashable {
     let types: [TypeEntry]
 }
 
+/// DTOからデータを受け取り、プロジェクトで扱うEntity
+struct PokemonEntity {
+    // ポケモンの名前
+    let name: String
+    // ポケモンの図鑑No.
+    let id: Int
+    // ポケモンの画像
+    let image: String
+    // ポケモンのタイプ
+    let types: [String]
+}
+
 // 画像のデータ構造
 struct Image: Decodable, Hashable {
     // ポケモンが正面向きの画像
