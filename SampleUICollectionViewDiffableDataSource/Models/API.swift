@@ -36,6 +36,8 @@ final class API: APIInput {
                         let pokemon = pokemonDTO.convertToPokemon()
                         // 変換した値をpokemonsの要素として追加
                         pokemons.append(pokemon)
+                        // pokemonsを呼び出し元に通知
+                        completion(.success(pokemons))
                     } catch {
                         completion(.failure(error))
                     }
