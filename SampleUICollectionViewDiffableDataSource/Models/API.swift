@@ -30,7 +30,11 @@ final class API: APIInput {
                 var pokemons: [Pokemon] = []
                 dataArray.forEach {
                     do {
-                        let pokemon = try JSONDecoder().decode(Pokemon.self, from: $0)
+                        // DTOにdecode
+                        let pokemonDTO = try JSONDecoder().decode(PokemonDTO.self, from: $0)
+                        // DTOをEntity(Pokemon)に変換
+                        let pokemon = pokemonDTO.convertToPokemon()
+                        // 変換した値をpokemonsの要素として追加
                         pokemons.append(pokemon)
                     } catch {
                         completion(.failure(error))
@@ -49,7 +53,11 @@ final class API: APIInput {
         do {
             let dataArray = try await fetchPokemonData()
             try dataArray.forEach {
-                let pokemon = try JSONDecoder().decode(Pokemon.self, from: $0)
+                // DTOにdecode
+                let pokemonDTO = try JSONDecoder().decode(PokemonDTO.self, from: $0)
+                // DTOをEntity(Pokemon)に変換
+                let pokemon = pokemonDTO.convertToPokemon()
+                // 変換した値をpokemonsの要素として追加
                 pokemons.append(pokemon)
             }
         } catch {
