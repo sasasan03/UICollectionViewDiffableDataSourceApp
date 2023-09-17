@@ -80,6 +80,7 @@
 		1CF2FF642994F4D300E645DE /* PokemonCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PokemonCell.xib; sourceTree = "<group>"; };
 		1CF79F352A1445A500452A0C /* SampleUICollectionViewDiffableDataSourceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SampleUICollectionViewDiffableDataSourceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CF79F372A1445A600452A0C /* SampleUICollectionViewDiffableDataSourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleUICollectionViewDiffableDataSourceTests.swift; sourceTree = "<group>"; };
+		69F37A272AB7100C0081727D /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		70B6BAAEBB2A3568C7632670 /* Pods-SampleUICollectionViewDiffableDataSource.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SampleUICollectionViewDiffableDataSource.release.xcconfig"; path = "Target Support Files/Pods-SampleUICollectionViewDiffableDataSource/Pods-SampleUICollectionViewDiffableDataSource.release.xcconfig"; sourceTree = "<group>"; };
 		BC35B33A3C0C4665C41F1BC2 /* Pods_SampleUICollectionViewDiffableDataSource.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SampleUICollectionViewDiffableDataSource.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3A6B0848A5FFD6BB5D8D81C /* Pods-SampleUICollectionViewDiffableDataSource.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SampleUICollectionViewDiffableDataSource.debug.xcconfig"; path = "Target Support Files/Pods-SampleUICollectionViewDiffableDataSource/Pods-SampleUICollectionViewDiffableDataSource.debug.xcconfig"; sourceTree = "<group>"; };
@@ -213,6 +214,7 @@
 				1C79CDD22988C57600B85AF9 /* Assets.xcassets */,
 				1C79CDD42988C57600B85AF9 /* LaunchScreen.storyboard */,
 				1C79CDD72988C57600B85AF9 /* Info.plist */,
+				69F37A272AB7100C0081727D /* MyPlayground.playground */,
 			);
 			path = SampleUICollectionViewDiffableDataSource;
 			sourceTree = "<group>";

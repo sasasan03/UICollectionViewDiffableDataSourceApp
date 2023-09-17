@@ -52,19 +52,36 @@ final class API: APIInput {
     }
 
     func decodePokemonData() async throws -> [Pokemon] {
+        print("🟥")
+        
         do {
             let dataArray = try await fetchPokemonData()
-            try dataArray.forEach {
-                // DTOにdecode
-                let pokemonDTO = try JSONDecoder().decode(PokemonDTO.self, from: $0)
-                // DTOをEntity(Pokemon)に変換
+            pokemons = try dataArray.map { data in
+                let pokemonDTO = try JSONDecoder().decode(PokemonDTO.self, from: data)
                 let pokemon = pokemonDTO.convertToPokemon()
-                // 変換した値をpokemonsの要素として追加
-                pokemons.append(pokemon)
+                return pokemon
             }
+            
+            /*❌ appendする作業がなくなる
+            try dataArray.map({ data in
+                let pokemonDTO = try JSONDecoder().decode(PokemonDTO.self, from: data)
+                let pokemon = pokemonDTO.convertToPokemon()
+                pokemons.append(pokemon)
+            })
+             ❌*/
+            
+//            try dataArray.forEach {
+//                // DTOにdecode
+//                let pokemonDTO = try JSONDecoder().decode(PokemonDTO.self, from: $0)
+//                // DTOをEntity(Pokemon)に変換
+//                let pokemon = pokemonDTO.convertToPokemon()
+//                // 変換した値をpokemonsの要素として追加
+//                pokemons.append(pokemon)
+//            }
         } catch {
             throw error
         }
+        print(pokemons)
         return pokemons
     }
 
@@ -73,6 +90,7 @@ final class API: APIInput {
         var dataArray: [Data] = []
         let urls = getURLs()
         urls.forEach {
+            print("🟦")
             guard let url = $0 else { return }
             let task = URLSession.shared.dataTask(with: url, completionHandler: { data, _, error in
                 if let error = error {
